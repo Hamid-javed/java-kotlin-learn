@@ -960,17 +960,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutFlashcardOptions" />
 
-            <Spinner
-                android:id="@+id/spinnerSortBy"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/layoutSort"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="@drawable/edit_text_bg"
-                android:padding="12dp"
+                android:paddingHorizontal="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvSortBy" />
+                app:layout_constraintTop_toBottomOf="@id/tvSortBy">
+
+                <Spinner
+                    android:id="@+id/spinnerSortBy"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_bg"
+                    android:padding="12dp" />
+
+                <Button
+                    android:id="@+id/btnSortOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:text="DESC"
+                    android:textSize="12sp"
+                    android:minWidth="80dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            </LinearLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,8 @@
       "Bash(python -c \":*)",
       "Bash(./gradlew.bat assembleDebug)",
       "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe logcat:*)",
-      "Bash(tr '>' '\\\\n')"
+      "Bash(tr '>' '\\\\n')",
+      "Bash(./gradlew.bat assembleRelease)"
     ]
   }
 }

@@ -182,6 +182,7 @@ class WIPFilterFragment : Fragment() {
             cbUpdateViewCount.isChecked = true
             cbUpdateTimestamps.isChecked = true
             spinnerSortBy.setSelection(0)
+            btnSortOrder.text = "DESC \u2193"
         }
 
 
@@ -282,6 +283,7 @@ class WIPFilterFragment : Fragment() {
             updateViewCountDuringFlashcard = true
             updateTimestampsDuringFlashcard = true
             sortBy = null
+            sortAscending = false
         }
 
 
@@ -1361,14 +1363,30 @@ class WIPFilterFragment : Fragment() {
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+
+        // Sort order toggle button
+        updateSortOrderButton()
+        mBinding.btnSortOrder.setOnClickListener {
+            sharedViewModel.sortAscending = !sharedViewModel.sortAscending
+            updateSortOrderButton()
+        }
+    }
+
+    private fun updateSortOrderButton() {
+        if (sharedViewModel.sortAscending) {
+            mBinding.btnSortOrder.text = "ASC \u2191"  // up arrow
+        } else {
+            mBinding.btnSortOrder.text = "DESC \u2193" // down arrow
+        }
     }
 
     private fun sortFilteredList(list: List<WIPModel>): List<WIPModel> {
+        val asc = sharedViewModel.sortAscending
         return when (sharedViewModel.sortBy) {
-            "Last Viewed" -> list.sortedByDescending { it.displayCountUpdatedAt }
-            "Last Encountered" -> list.sortedByDescending { it.readCountUpdatedAt }
-            "Created" -> list.sortedByDescending { it.createdAt }
-            "Para Created" -> list.sortedByDescending { it.lastParaCreatedAt }
+            "Last Viewed" -> if (asc) list.sortedBy { it.displayCountUpdatedAt } else list.sortedByDescending { it.displayCountUpdatedAt }
+            "Last Encountered" -> if (asc) list.sortedBy { it.readCountUpdatedAt } else list.sortedByDescending { it.readCountUpdatedAt }
+            "Created" -> if (asc) list.sortedBy { it.createdAt } else list.sortedByDescending { it.createdAt }
+            "Para Created" -> if (asc) list.sortedBy { it.lastParaCreatedAt } else list.sortedByDescending { it.lastParaCreatedAt }
             else -> list
         }
     }

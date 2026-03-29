@@ -52,7 +52,8 @@ class SharedViewModel : ViewModel() {
     var updateTimestampsDuringFlashcard: Boolean = true
 
     // Sort option for filter results
-    var sortBy: String? = null  // "lastViewed", "lastEncountered", "created", "paraCreated"
+    var sortBy: String? = null  // "Last Viewed", "Last Encountered", "Created", "Para Created"
+    var sortAscending: Boolean = false  // false = descending (newest first), true = ascending (oldest first)
 
 
     var lastViewedAt: Long? = null
