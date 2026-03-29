@@ -11,7 +11,8 @@
       "Bash(\"$HOME/AppData/Local/Android/Sdk/platform-tools/adb.exe\" devices:*)",
       "Bash(./gradlew.bat installDebug)",
       "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe shell:*)",
-      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type f -name \"*.kt\" -o -name \"*.xml\" -o -name \"*.gradle*\")"
+      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type f -name \"*.kt\" -o -name \"*.xml\" -o -name \"*.gradle*\")",
+      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader/app/src\" -type f \\\\\\( -name \"*.kt\" -o -name \"*.xml\" \\\\\\))"
     ]
   }
 }
