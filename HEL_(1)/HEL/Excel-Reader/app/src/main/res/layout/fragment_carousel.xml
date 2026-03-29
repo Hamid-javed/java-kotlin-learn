@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/steel"
+    tools:context=".fragments.CarouselFragment">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTimer"
+        tools:listitem="@layout/carousel_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="112dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="60sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="0:00">
+
+    </TextView>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close"
+        android:id="@+id/ivCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"/>
+
+    <ImageView
+        android:id="@+id/ivSpeaker"
+        android:layout_width="28dp"
+        android:layout_height="38dp"
+        android:src="@drawable/ic_speaker_on"
+        app:tint="@color/black"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+
+    <ProgressBar
+        android:id="@+id/pbSpeakerLoading"
+        style="@android:style/Widget.ProgressBar.Small"
+        android:layout_width="28dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+         
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:indeterminate="true"
+        android:visibility="gone"/>
+
+
+    <TextView
+        android:id="@+id/tvResultCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:text="total:"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivCancel"
+        android:textColor="@color/black"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintTop_toTopOf="@+id/ivCancel"
+        app:layout_constraintEnd_toStartOf="@+id/ivCancel" />
+
+    <LinearLayout
+        android:id="@+id/llSelection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/ivCancel"
+        app:layout_constraintEnd_toEndOf="@+id/ivCancel">
+
+        <TextView
+            android:id="@+id/tvSelectionCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp"
+            android:text="0/0 selected" />
+
+        <CheckBox
+            android:id="@+id/cbSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnGeneratePara"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Para"
+        android:visibility="gone"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvNoResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No matching results found"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="20dp"/>
+
+
+    <View
+        android:id="@+id/generationBarrier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#40000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

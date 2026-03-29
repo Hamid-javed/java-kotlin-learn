@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(echo $ANDROID_HOME)",
+      "Bash(echo $ANDROID_SDK_ROOT)",
+      "Bash(java:*)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(\"/c/Users/hamid/AppData/Local/Android/Sdk/platform-tools/adb\" devices:*)",
+      "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe devices:*)",
+      "Bash(\"$HOME/AppData/Local/Android/Sdk/platform-tools/adb.exe\" devices:*)",
+      "Bash(./gradlew.bat installDebug)",
+      "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe shell:*)",
+      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type f -name \"*.kt\" -o -name \"*.xml\" -o -name \"*.gradle*\")"
+    ]
+  }
+}

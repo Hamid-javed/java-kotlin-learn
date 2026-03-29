@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/WIPDetailFragment"
+        android:name="com.rameez.hel.fragments.WIPDetailFragment"
+        android:label="fragment_w_i_p_detail"
+        tools:layout="@layout/fragment_w_i_p_detail" />
+    <fragment
+        android:id="@+id/WIPFilterFragment"
+        android:name="com.rameez.hel.fragments.WIPFilterFragment"
+        android:label="fragment_w_i_p_filter"
+        tools:layout="@layout/fragment_w_i_p_filter" />
+    <fragment
+        android:id="@+id/WIPSearchFragment"
+        android:name="com.rameez.hel.fragments.WIPSearchFragment"
+        android:label="fragment_w_i_p_search"
+        tools:layout="@layout/fragment_w_i_p_search" />
+    <fragment
+        android:id="@+id/WIPListFragment"
+        android:name="com.rameez.hel.fragments.WIPListFragment"
+        android:label="fragment_w_i_p_list"
+        tools:layout="@layout/fragment_w_i_p_list" />
+    <fragment
+        android:id="@+id/WIPEditFragment"
+        android:name="com.rameez.hel.fragments.WIPEditFragment"
+        android:label="fragment_w_i_p_edit"
+        tools:layout="@layout/fragment_w_i_p_edit" />
+    <fragment
+        android:id="@+id/carouselFragment"
+        android:name="com.rameez.hel.fragments.CarouselFragment"
+        android:label="fragment_carousel"
+        tools:layout="@layout/fragment_carousel" />
+    <fragment
+        android:id="@+id/deleteTagsFragment"
+        android:name="com.rameez.hel.fragments.DeleteTagsFragment"
+        android:label="fragment_delete_tags"
+        tools:layout="@layout/fragment_delete_tags" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.rameez.hel.fragments.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" />
+</navigation>

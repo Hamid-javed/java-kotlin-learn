@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/silver"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Select an Option"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/tv1"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="20dp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/rWord"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Import WIP"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv1">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/rPhrase"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Export WIP"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rWord">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/rIdiom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Add WIP"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rPhrase">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/rSourceSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Source Settings"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rIdiom"/>
+
+    <TextView
+        android:id="@+id/rResetTags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Remove Tags"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rSourceSettings"/>
+
+    <TextView
+        android:id="@+id/rEncountered"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Reset Encountered"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rResetTags"/>
+
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Reset Viewed"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:id="@+id/rViewed"
+        android:visibility="gone"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rEncountered"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/rAllWips"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Delete WIPs"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_margin="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rViewed">
+
+    </TextView>
+</androidx.constraintlayout.widget.ConstraintLayout>

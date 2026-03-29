@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/steel"
+    tools:context=".fragments.WIPDetailFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/back_arrow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit WIP"
+                android:id="@+id/tvHeading"
+                app:layout_constraintTop_toTopOf="@id/imgBack"
+                app:layout_constraintBottom_toBottomOf="@id/imgBack"
+                app:layout_constraintStart_toEndOf="@id/imgBack"
+                android:layout_marginStart="20dp"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_extrabold">
+
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgBack"
+                app:layout_constraintVertical_bias="1.0">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etWord"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        tools:text="Scramble"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_extrabold"
+                            android:text="Category"
+                            android:textColor="@color/black" />
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCategory"
+                            android:layout_marginTop="16dp"
+                            android:layout_width="220dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_medium"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            tools:text="Word" />
+                        <Spinner
+                            android:id="@+id/readSpinner"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:background="@drawable/edit_text_bg"
+                            android:padding="12dp"
+                            android:layout_alignParentRight="true"
+                            >
+
+                        </Spinner>
+
+                    </RelativeLayout>
+
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Meaning"
+                        android:textColor="@color/black" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMeaning"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        tools:text="run with light steps out of fear or excitement run with light steps out of fear or excitement"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Sample Sentence"
+                        android:textColor="@color/black" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSampleSentence"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        tools:text="The mouse scampered away from the cat into its hole."
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Tags"
+                        android:textColor="@color/black" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/etTag"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:maxLines="1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="Sports"
+                            android:completionThreshold="1"
+                            android:inputType="text"
+                            app:layout_constraintEnd_toStartOf="@id/btnAddTag"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:fontFamily="@font/poppins_medium"
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/btnAddTag"
+                            app:layout_constraintTop_toTopOf="@id/etTag"
+                            app:layout_constraintBottom_toBottomOf="@id/etTag"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:text="Add">
+
+                        </Button>
+
+                        <ImageView
+                            android:id="@+id/ivDeleteTags"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/ic_delete"
+                            app:layout_constraintEnd_toEndOf="@id/btnAddTag"
+                            app:layout_constraintTop_toBottomOf="@id/btnAddTag">
+
+                        </ImageView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:textSize="16sp"
+                        android:id="@+id/tvTags"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="14dp"
+                        tools:text="Sports, Casuals, Business, Formal">
+
+                    </TextView>
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Viewed"
+                        android:textColor="@color/black" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Viewd"
+                        android:visibility="invisible"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnViewedMinus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_decrease"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="decrease" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/etViewedCount"
+                        android:textColor="@color/black"
+                        android:padding="6dp"
+                        android:inputType="number"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/back_box"
+                        android:text="0">
+
+                    </com.google.android.material.textfield.TextInputEditText>
+                    <ImageButton
+                        android:id="@+id/btnViewedPlus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_increase"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="Increase" />
+
+                    <TextView
+                        android:id="@+id/txtViewedCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/poppins_medium"
+                        android:gravity="end"
+                        android:text="times"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Encountered"
+
+                        android:textColor="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnEncounterMinus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_decrease"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="Decrease" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/etRadCount"
+                        android:textColor="@color/black"
+                        android:maxLines="1"
+                        android:paddingEnd="20dp"
+                        android:inputType="number"
+                        android:padding="6dp"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/back_box"
+                        android:text="0">
+
+                    </com.google.android.material.textfield.TextInputEditText>
+
+                    <ImageButton
+                        android:id="@+id/btnEncounterPlus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_increase"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="Increase" />
+
+                    <TextView
+                        android:id="@+id/txtReadCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/poppins_medium"
+                        android:gravity="end"
+                        android:text="times"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="32dp"
+                    android:textAlignment="center"
+                    android:text="Save Changes" />
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

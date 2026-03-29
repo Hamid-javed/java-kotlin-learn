@@ -1,0 +1,45 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "java (buildArtifact)",
+			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${compileOutput:HEL-Excel-Reader}",
+				"${dependencies:HEL-Excel-Reader}",
+				"${compileOutput:app}",
+				"${dependencies:app}"
+			],
+			"problemMatcher": [],
+			"label": "java (buildArtifact): HEL_(1)",
+			"group": "build"
+		},
+		{
+			"type": "java (buildArtifact)",
+			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${compileOutput:HEL-Excel-Reader}",
+				"${dependencies:HEL-Excel-Reader}",
+				"${compileOutput:app}",
+				"${dependencies:app}"
+			],
+			"problemMatcher": [],
+			"label": "java (buildArtifact): HEL_(1)",
+			"group": "build"
+		},
+		{
+			"type": "java (build)",
+			"paths": [
+				"${workspace}"
+			],
+			"isFullBuild": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"label": "java (build): Build Workspace",
+			"detail": "$(tools) Build all the Java projects in workspace."
+		}
+	]
+}

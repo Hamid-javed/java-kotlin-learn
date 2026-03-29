@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.WIPDetailFragment">
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/steel"
+    android:fillViewport="true"
+    tools:context=".fragments.WIPDetailFragment">
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/back_arrow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/btnStopTTS"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_speaker_off"
+                app:tint="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgBack">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/txtWord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_weight="3"
+                        android:fontFamily="@font/poppins_extrabold"
+                        tools:text="Scramble"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/ivSpeaker"
+                        android:src="@drawable/speaker" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_weight="3"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Meaning" />
+
+                        <ImageView
+                            android:id="@+id/ivSpeakerMeaning"
+                            android:layout_width="28dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/speaker"
+                            app:tint="@color/black" />
+
+
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtMeaning"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+
+                        tools:text="run with light steps out of fear or excitement run with light steps out of fear or excitement"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+
+
+
+                <TextView
+                    android:id="@+id/tvGenerateSentence"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Generate AI sentence"
+                    android:textColor="@color/black"
+                    android:padding="8dp"
+                    android:background="@drawable/back_box"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:textSize="14sp"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:textColor="@color/black"
+                        android:layout_weight="3"
+                        android:padding="8dp"
+                        android:text="Sample Sentence" />
+
+                    <ImageView
+                        android:id="@+id/ivSpeakerSentence"
+                        android:layout_width="28dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/speaker"
+                        app:tint="@color/black" />
+
+                </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtSampleSentence"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        tools:text="The mouse scampered away from the cat into its hole."
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:textColor="@color/black"
+                        android:text="Category" />
+
+                    <TextView
+                        android:id="@+id/txtCategory"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        tools:text="Word"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:textColor="@color/black"
+                        android:text="Tags" />
+
+                    <TextView
+                        android:id="@+id/tvTags"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        tools:text="Sports, Casual"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Viewed" />
+
+
+                    <TextView
+                        android:id="@+id/txtViewCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppins_medium"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        tools:text="0 times"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Viewed"
+                    android:textColor="#E62525"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/dViewed">
+
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Encountered" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_weight="1"
+                        android:id="@+id/txtReadCount"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        tools:text="0 times"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Encountered"
+                    android:textColor="#E62525"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/dEncountered">
+
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/poppins_extrabold"
+                        android:text="Para Created" />
+
+                    <TextView
+                        android:id="@+id/tvParaCreatedAt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        android:text="-"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Para Timestamp"
+                    android:textColor="#E62525"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/dParaCreatedAt">
+
+                </TextView>
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="?android:attr/listDivider"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"/>
+                <TextView
+                    android:id="@+id/tvCreatedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created at: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:paddingTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvModifiedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modified at: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+
+                    android:paddingTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvLastViewedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Last viewed: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvLastEncounteredAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Last encountered: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvFirstViewedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="First viewed at: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvFirstEncounteredAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="First encountered at: -"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/btnEdit"
+                    android:text="Edit WIP"
+                    />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delete WIP"
+                    android:id="@+id/tvDeleteWIP"
+                    android:layout_marginTop="25dp">
+
+                </Button>
+
+
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
+    <View
+        android:id="@+id/generationBarrier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

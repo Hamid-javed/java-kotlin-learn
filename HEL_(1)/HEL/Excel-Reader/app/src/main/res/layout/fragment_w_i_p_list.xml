@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/steel"
+    tools:context=".fragments.WIPListFragment">
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:background="#D6D0D0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/llSearch"
+            android:layout_gravity="center_vertical"
+
+            >
+
+            <ImageView
+                android:id="@+id/imageSearch"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/baseline_search_24" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgSavedArticle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                app:tint="@color/black"
+                android:src="@drawable/baseline_article_24"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/imgFilter"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/baseline_filter_list_24" />
+
+            <ImageView
+                android:id="@+id/listOrientation"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/baseline_text_rotate_vertical_24" />
+
+            <ImageView
+                android:id="@+id/imgImportExport"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/baseline_more_vert_24"
+
+                />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llCountSelectAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/tvResultCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Showing 0 cards"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="8dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvSelectionCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp"
+            tools:text="5/20 selected" />
+
+        <CheckBox
+            android:id="@+id/cbSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:listitem="@layout/wip_list_item_layout"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llCountSelectAll" />
+
+    <Button
+        android:id="@+id/btnGeneratePara"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Para"
+        android:visibility="gone"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ProgressBar>
+
+    <View
+        android:id="@+id/generationBarrier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+</androidx.constraintlayout.widget.ConstraintLayout>

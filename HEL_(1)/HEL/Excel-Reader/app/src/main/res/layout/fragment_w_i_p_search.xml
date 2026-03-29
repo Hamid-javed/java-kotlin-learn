@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:background="@color/steel"
+    tools:context=".fragments.WIPSearchFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/back_box"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@null"
+            android:hint="Search...."
+            android:textColorHint="@color/black"
+            android:textColor="@color/black"
+            android:padding="16dp"
+            tools:ignore="Suspicious0dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llCountSelectAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/tvSelectionCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            tools:text="5 selected" />
+
+        <Button
+            android:id="@+id/btnGeneratePara"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generate Para"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NO DATA"
+        android:id="@+id/noData"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llCountSelectAll" />
+
+    <View
+        android:id="@+id/generationBarrier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

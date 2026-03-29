@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/white"
+    android:id="@+id/wipCv"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/cbSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Scramble"
+                android:id="@+id/txtWord"
+                android:fontFamily="@font/poppins_extrabold"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+
+                android:padding="8dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Scramble"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
+                android:id="@+id/txtMeaning"
+                android:padding="8dp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
