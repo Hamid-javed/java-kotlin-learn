@@ -12,7 +12,13 @@
       "Bash(./gradlew.bat installDebug)",
       "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe shell:*)",
       "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type f -name \"*.kt\" -o -name \"*.xml\" -o -name \"*.gradle*\")",
-      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader/app/src\" -type f \\\\\\( -name \"*.kt\" -o -name \"*.xml\" \\\\\\))"
+      "Bash(find \"C:/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader/app/src\" -type f \\\\\\( -name \"*.kt\" -o -name \"*.xml\" \\\\\\))",
+      "Read(//c/Users/hamid/OneDrive/Desktop/Java Kotlin/**)",
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)",
+      "Bash(./gradlew.bat assembleDebug)",
+      "Bash($LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe logcat:*)",
+      "Bash(tr '>' '\\\\n')"
     ]
   }
 }

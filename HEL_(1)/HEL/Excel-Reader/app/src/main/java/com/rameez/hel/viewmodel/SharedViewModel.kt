@@ -41,10 +41,18 @@ class SharedViewModel : ViewModel() {
 
     var isAutoScrollEnabled: Boolean = false
     var autoScrollIntervalSecs: Int = 5
+    var isAutoScrollPaused: Boolean = false
 
     var ttsOptions: MutableList<String> = mutableListOf()
 
     var remainingTimeInMillis: Long? = null
+
+    // Carousel controls
+    var updateViewCountDuringFlashcard: Boolean = true
+    var updateTimestampsDuringFlashcard: Boolean = true
+
+    // Sort option for filter results
+    var sortBy: String? = null  // "lastViewed", "lastEncountered", "created", "paraCreated"
 
 
     var lastViewedAt: Long? = null

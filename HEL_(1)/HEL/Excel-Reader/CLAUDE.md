@@ -45,6 +45,10 @@ Single-activity MVVM app with Navigation Component. All source is in `app/src/ma
 
 **Navigation:** `nav_graph.xml` starts at `SplashFragment` → `WIPListFragment` (main hub) → branches to Detail, Edit, Search, Filter, Carousel, and DeleteTags fragments. `ArticleBottomSheetFragment` and `SourceSelectionBottomSheetFragment` are shown as bottom sheets, not in the nav graph.
 
+**SharedViewModel state:** Controls flashcard behavior via `updateViewCountDuringFlashcard`, `updateTimestampsDuringFlashcard`, `isAutoScrollPaused`, and `sortBy`. These are set from `WIPFilterFragment` and consumed by `CarouselFragment`.
+
+**Filter operators:** All count and timestamp filters support: `=`, `<`, `>`, `<=`, `>=`, `<>` (between), `!=` (not equal), `null` (empty/zero), `!null` (has value). The `matchDateOperator` helper in `WIPFilterFragment` handles all date comparisons.
+
 ## Key Identifiers
 
 - **Package namespace:** `com.rameez.hel`

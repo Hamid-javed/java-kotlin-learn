@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -50,9 +51,7 @@ class CarouselFragment : Fragment() {
     private val snapHelper = PagerSnapHelper()
     private lateinit var textToSpeech: TextToSpeech
     private var countDownTimer: CountDownTimer? = null
-
     private var isTtsReady = false
-
 
     private val runnable = object : Runnable {
         override fun run() {
@@ -61,17 +60,20 @@ class CarouselFragment : Fragment() {
 
             if (totalItems <= 0) return
 
-            // Calculate next position correctly
-            val nextPosition = if (currentPosition >= totalItems - 1) 0 else currentPosition + 1
+            // #11: Stop at last card, don't loop
+            if (currentPosition >= totalItems - 1) {
+                sharedViewModel.isAutoScrollPaused = true
+                updatePauseButtonIcon()
+                return
+            }
 
+            val nextPosition = currentPosition + 1
             binding.rvList.smoothScrollToPosition(nextPosition)
 
-            // Schedule next scroll
             val interval = sharedViewModel.autoScrollIntervalSecs * 1000L
             handler.postDelayed(this, interval)
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,14 +82,12 @@ class CarouselFragment : Fragment() {
                 textToSpeech.language = Locale.US
                 isTtsReady = true
 
-                // ✅ ADD THIS BLOCK
                 handler.post {
                     if (_binding != null) {
                         updateSpeakerIcon()
                     }
                 }
 
-                // existing logic stays unchanged
                 if (sharedViewModel.isReadAloud && shuffledList.isNotEmpty()) {
                     handler.post {
                         if (_binding != null) {
@@ -102,10 +102,7 @@ class CarouselFragment : Fragment() {
                 }
             }
         }
-
-
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -144,6 +141,7 @@ class CarouselFragment : Fragment() {
                     }
                     sharedViewModel.remainingTimeInMillis = null
                     sharedViewModel.isTimerRunning = false
+                    sharedViewModel.isAutoScrollPaused = false
                     sharedViewModel.leftSwipedItemList.clear()
                     sharedViewModel.itemPos = null
                     sharedViewModel.itemId = null
@@ -178,6 +176,7 @@ class CarouselFragment : Fragment() {
             ivCancel.setOnClickListener {
                 sharedViewModel.isTimerRunning = false
                 sharedViewModel.remainingTimeInMillis = null
+                sharedViewModel.isAutoScrollPaused = false
                 sharedViewModel.leftSwipedItemList.clear()
                 sharedViewModel.itemPos = null
                 sharedViewModel.itemId = null
@@ -187,7 +186,6 @@ class CarouselFragment : Fragment() {
             rvList.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-            // Disable change animations to stop blinking during data updates (e.g. view count)
             (rvList.itemAnimator as? DefaultItemAnimator)?.supportsChangeAnimations = false
 
             snapHelper.attachToRecyclerView(null)
@@ -220,6 +218,49 @@ class CarouselFragment : Fragment() {
                     wipViewModel.generateArticle(requireContext(), selectedWords, selectedIds, savedSources)
                 }
             }
+
+            // #6: Shuffle button
+            btnShuffle.setOnClickListener {
+                if (shuffledList.isEmpty()) return@setOnClickListener
+                shuffledList = shuffledList.shuffled()
+                carouselAdapter.submitList(shuffledList) {
+                    rvList.scrollToPosition(0)
+                    currentPosition = 0
+                    previousPosition = 0
+                    updateCardPosition(0)
+                }
+                Toast.makeText(requireContext(), "Cards shuffled", Toast.LENGTH_SHORT).show()
+            }
+
+            // #9: Navigation buttons
+            btnFirst.setOnClickListener { navigateToCard(0) }
+            btnLast.setOnClickListener { navigateToCard(shuffledList.size - 1) }
+            btnPrev.setOnClickListener {
+                if (currentPosition > 0) navigateToCard(currentPosition - 1)
+            }
+            btnNext.setOnClickListener {
+                if (currentPosition < shuffledList.size - 1) navigateToCard(currentPosition + 1)
+            }
+
+            // #8: Direct navigation to card number
+            btnGoToCard.setOnClickListener { goToTypedCard() }
+            etGoToCard.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    goToTypedCard()
+                    true
+                } else false
+            }
+
+            // #10: Pause button for auto scroll
+            btnPauseAutoScroll.setOnClickListener {
+                sharedViewModel.isAutoScrollPaused = !sharedViewModel.isAutoScrollPaused
+                if (sharedViewModel.isAutoScrollPaused) {
+                    handler.removeCallbacks(runnable)
+                } else {
+                    handler.postDelayed(runnable, sharedViewModel.autoScrollIntervalSecs * 1000L)
+                }
+                updatePauseButtonIcon()
+            }
         }
 
         carouselAdapter.onSelectionChanged = {
@@ -235,7 +276,6 @@ class CarouselFragment : Fragment() {
             it.id?.let(idsList::add)
         }
 
-        // ✅ FIX 1: IMMUTABLE update from details screen
         wipViewModel.lastUpdatedWip.observe(viewLifecycleOwner) { updatedWIP ->
             updatedWIP ?: return@observe
 
@@ -260,7 +300,6 @@ class CarouselFragment : Fragment() {
                 list
             }
 
-
             shuffledList = finalList.toList()
             carouselAdapter.submitList(shuffledList) {
                 val posToScroll = sharedViewModel.itemPos ?: 0
@@ -268,26 +307,28 @@ class CarouselFragment : Fragment() {
                     mBinding.rvList.scrollToPosition(posToScroll)
                     currentPosition = posToScroll
                     previousPosition = posToScroll
+                    updateCardPosition(posToScroll)
 
-                    // ✅ MANUALLY COUNT THE INITIAL CARD
-                    shuffledList.getOrNull(posToScroll)?.let { item ->
-                        val id = item.id
-                        if (id != null && !sessionCountedIds.contains(id)) {
-                            sessionCountedIds.add(id)
+                    // Count initial card if enabled
+                    if (sharedViewModel.updateViewCountDuringFlashcard) {
+                        shuffledList.getOrNull(posToScroll)?.let { item ->
+                            val id = item.id
+                            if (id != null && !sessionCountedIds.contains(id)) {
+                                sessionCountedIds.add(id)
 
-                            val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
-                            if (!isParaFilterActive) {
-                                wipViewModel.incrementDisplayCount(id)
+                                val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
+                                if (!isParaFilterActive) {
+                                    wipViewModel.incrementDisplayCount(id)
 
-                                // Update UI locally: e.g. 5 becomes 6 immediately
-                                val currentViews = item.displayCount ?: 0f
-                                val updatedItem = item.copy(displayCount = currentViews + 1f)
+                                    val currentViews = item.displayCount ?: 0f
+                                    val updatedItem = item.copy(displayCount = currentViews + 1f)
 
-                                val newList = shuffledList.map {
-                                    if (it.id == updatedItem.id) updatedItem else it
+                                    val newList = shuffledList.map {
+                                        if (it.id == updatedItem.id) updatedItem else it
+                                    }
+                                    shuffledList = newList
+                                    carouselAdapter.submitList(newList)
                                 }
-                                shuffledList = newList
-                                carouselAdapter.submitList(newList)
                             }
                         }
                     }
@@ -298,20 +339,25 @@ class CarouselFragment : Fragment() {
                         }
                     }
                 }
-                
-                // Initial selection count
+
                 mBinding.tvSelectionCount.text = "0/${carouselAdapter.itemCount} selected"
             }
-
-
 
             if (shuffledList.isEmpty()) {
                 mBinding.rvList.visibility = View.GONE
                 mBinding.tvNoResults.visibility = View.VISIBLE
                 mBinding.tvNoResults.text = "No matching results found"
+                mBinding.llNavigation.visibility = View.GONE
             } else {
                 mBinding.rvList.visibility = View.VISIBLE
                 mBinding.tvNoResults.visibility = View.GONE
+                mBinding.llNavigation.visibility = View.VISIBLE
+            }
+
+            // Show pause button if auto-scroll is enabled
+            if (sharedViewModel.isAutoScrollEnabled) {
+                mBinding.btnPauseAutoScroll.visibility = View.VISIBLE
+                updatePauseButtonIcon()
             }
 
             updateSpeakerIcon()
@@ -332,7 +378,7 @@ class CarouselFragment : Fragment() {
                 mBinding.generationBarrier.visibility = View.GONE
                 mBinding.btnGeneratePara.text = "Generate Para"
                 mBinding.btnGeneratePara.isEnabled = true
-                
+
                 if (wipViewModel.generatedArticle.value != null) {
                     carouselAdapter.clearSelection()
                     mBinding.cbSelectAll.isChecked = false
@@ -340,7 +386,7 @@ class CarouselFragment : Fragment() {
                     Toast.makeText(requireContext(), "Article generated and saved. You can also view it from the main list.", Toast.LENGTH_LONG).show()
                 }
 
-                if (sharedViewModel.isAutoScrollEnabled) {
+                if (sharedViewModel.isAutoScrollEnabled && !sharedViewModel.isAutoScrollPaused) {
                     handler.postDelayed(
                         runnable,
                         sharedViewModel.autoScrollIntervalSecs * 1000L
@@ -369,7 +415,6 @@ class CarouselFragment : Fragment() {
             )
         }
 
-
         mBinding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -381,41 +426,41 @@ class CarouselFragment : Fragment() {
 
                     if (snappedPos != RecyclerView.NO_POSITION) {
                         currentPosition = snappedPos
+                        updateCardPosition(snappedPos)
                         val item = shuffledList.getOrNull(snappedPos)
                         val id = item?.id
 
-                        // 1. TTS Logic
+                        // TTS Logic
                         if (sharedViewModel.isReadAloud && !sharedViewModel.isMuted &&
                             snappedPos != previousPosition && snappedPos < shuffledList.size) {
                             speakWIP(shuffledList[snappedPos])
                         }
 
-                        // 2. View Count Logic (The "Only Once" Fix)
-                        if (id != null && !sessionCountedIds.contains(id)) {
-                            // Mark as counted for this session immediately
-                            sessionCountedIds.add(id)
+                        // #13: Only update counts if checkbox is enabled
+                        if (sharedViewModel.updateViewCountDuringFlashcard) {
+                            if (id != null && !sessionCountedIds.contains(id)) {
+                                sessionCountedIds.add(id)
 
-                            val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
-                            if (!isParaFilterActive) {
-                                // Update Database
-                                wipViewModel.incrementDisplayCount(id)
+                                val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
+                                if (!isParaFilterActive) {
+                                    wipViewModel.incrementDisplayCount(id)
 
-                                // Update UI locally: 5 becomes 6, 2 becomes 3
-                                val currentViews = item.displayCount ?: 0f
-                                val updatedItem = item.copy(displayCount = currentViews + 1f)
+                                    val currentViews = item.displayCount ?: 0f
+                                    val updatedItem = item.copy(displayCount = currentViews + 1f)
 
-                                val newList = shuffledList.map {
-                                    if (it.id == updatedItem.id) updatedItem else it
+                                    val newList = shuffledList.map {
+                                        if (it.id == updatedItem.id) updatedItem else it
+                                    }
+                                    shuffledList = newList
+                                    carouselAdapter.submitList(newList)
                                 }
-                                shuffledList = newList
-                                carouselAdapter.submitList(newList)
                             }
                         }
 
                         previousPosition = snappedPos
                     }
 
-                    if (sharedViewModel.isAutoScrollEnabled) {
+                    if (sharedViewModel.isAutoScrollEnabled && !sharedViewModel.isAutoScrollPaused) {
                         handler.removeCallbacks(runnable)
                         handler.postDelayed(runnable, sharedViewModel.autoScrollIntervalSecs * 1000L)
                     }
@@ -426,7 +471,6 @@ class CarouselFragment : Fragment() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                // This is only for your 'swiped items' tracking, not for counting views
                 if (dx != 0) {
                     val lm = recyclerView.layoutManager as LinearLayoutManager
                     val lastPos = lm.findLastVisibleItemPosition()
@@ -456,6 +500,47 @@ class CarouselFragment : Fragment() {
         }
     }
 
+    // #7: Update card position display
+    @SuppressLint("SetTextI18n")
+    private fun updateCardPosition(position: Int) {
+        val total = shuffledList.size
+        if (total > 0) {
+            mBinding.tvCardPosition.text = "Card ${position + 1} of $total"
+            mBinding.tvCardPosition.visibility = View.VISIBLE
+        } else {
+            mBinding.tvCardPosition.visibility = View.GONE
+        }
+    }
+
+    // #8: Navigate to typed card number
+    private fun goToTypedCard() {
+        val text = mBinding.etGoToCard.text?.toString()?.trim() ?: return
+        val cardNum = text.toIntOrNull() ?: return
+
+        if (cardNum < 1 || cardNum > shuffledList.size) {
+            Toast.makeText(requireContext(), "Enter 1-${shuffledList.size}", Toast.LENGTH_SHORT).show()
+            return
+        }
+        navigateToCard(cardNum - 1)
+        mBinding.etGoToCard.text?.clear()
+    }
+
+    // Navigate to specific card position
+    private fun navigateToCard(position: Int) {
+        if (position !in shuffledList.indices) return
+        mBinding.rvList.smoothScrollToPosition(position)
+    }
+
+    // #10: Update pause button icon
+    private fun updatePauseButtonIcon() {
+        if (sharedViewModel.isAutoScrollPaused) {
+            mBinding.btnPauseAutoScroll.setImageResource(android.R.drawable.ic_media_play)
+            mBinding.btnPauseAutoScroll.contentDescription = "Resume auto-scroll"
+        } else {
+            mBinding.btnPauseAutoScroll.setImageResource(android.R.drawable.ic_media_pause)
+            mBinding.btnPauseAutoScroll.contentDescription = "Pause auto-scroll"
+        }
+    }
 
     private fun speakWIP(wip: WIPModel) {
         if (sharedViewModel.isMuted ||
@@ -475,7 +560,6 @@ class CarouselFragment : Fragment() {
                 "Word" -> wip.wip
                 "Meaning" -> wip.meaning
                 "Sentence" -> stripSourceForTts(wip.sampleSentence)
-
                 else -> null
             }
 
@@ -494,7 +578,6 @@ class CarouselFragment : Fragment() {
 
     private fun stripSourceForTts(text: String?): String {
         if (text.isNullOrBlank()) return ""
-
         return text
             .replace(Regex("Source:\\s*https?://\\S+", RegexOption.IGNORE_CASE), "")
             .replace("Go To Source", "", ignoreCase = true)
@@ -508,13 +591,11 @@ class CarouselFragment : Fragment() {
             if (count == 0) View.GONE else View.VISIBLE
     }
 
-
     private fun startTimer() {
-        if (sharedViewModel.isAutoScrollEnabled) {
+        if (sharedViewModel.isAutoScrollEnabled && !sharedViewModel.isAutoScrollPaused) {
             handler.post(runnable)
         }
 
-        // Determine starting time: use saved remaining time if it exists, otherwise calculate from scratch
         val timeToStart = sharedViewModel.remainingTimeInMillis ?: run {
             val hours = sharedViewModel.selectedHours?.toLong() ?: 0L
             val mins = sharedViewModel.selectedMins?.toLong() ?: 0L
@@ -539,7 +620,7 @@ class CarouselFragment : Fragment() {
         countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(millis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                sharedViewModel.remainingTimeInMillis = millisUntilFinished // Save progress
+                sharedViewModel.remainingTimeInMillis = millisUntilFinished
 
                 val binding = _binding ?: return
                 val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished)
@@ -559,33 +640,26 @@ class CarouselFragment : Fragment() {
         sharedViewModel.isTimerRunning = true
     }
 
-
-
-
     private fun updateSpeakerIcon() {
         val isReadAloudMaster = sharedViewModel.isReadAloud
         val isMutedLocal = sharedViewModel.isMuted
         val listSize = shuffledList.size
 
-        // RULE 0: TTS NOT READY → show ProgressBar
         if (!isTtsReady && isReadAloudMaster && listSize > 0) {
             mBinding.ivSpeaker.visibility = View.GONE
             mBinding.pbSpeakerLoading.visibility = View.VISIBLE
             return
         } else {
-            // Hide loading when TTS ready
             mBinding.pbSpeakerLoading.visibility = View.GONE
             mBinding.ivSpeaker.visibility = if (isReadAloudMaster && listSize > 0) View.VISIBLE else View.GONE
         }
 
-        // RULE 1: Master OFF or list empty → hide speaker & stop TTS
         if (!isReadAloudMaster || listSize == 0) {
             mBinding.ivSpeaker.visibility = View.GONE
             textToSpeech.stop()
             return
         }
 
-        // RULE 2: TTS READY → enable speaker
         mBinding.ivSpeaker.isEnabled = true
 
         if (!isMutedLocal) {
@@ -614,7 +688,6 @@ class CarouselFragment : Fragment() {
         bottomSheet.show(childFragmentManager, "ArticleBottomSheet")
     }
 
-
     override fun onDestroyView() {
         handler.removeCallbacks(runnable)
         countDownTimer?.cancel()
@@ -622,7 +695,6 @@ class CarouselFragment : Fragment() {
         super.onDestroyView()
         textToSpeech.stop()
         _binding = null
-//        leftSwipedItemList.clear()
     }
 
     override fun onDestroy() {

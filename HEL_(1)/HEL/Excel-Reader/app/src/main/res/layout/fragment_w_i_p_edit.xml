@@ -66,16 +66,27 @@
                     android:orientation="horizontal">
 
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <AutoCompleteTextView
                         android:id="@+id/etWord"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_extrabold"
                         tools:text="Scramble"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:completionThreshold="2" />
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvDuplicateWarning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#D32F2F"
+                    android:textSize="13sp"
+                    android:paddingHorizontal="8dp"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

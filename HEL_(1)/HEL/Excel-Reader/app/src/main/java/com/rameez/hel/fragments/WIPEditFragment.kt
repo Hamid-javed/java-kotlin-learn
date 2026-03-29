@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -30,6 +31,8 @@ class WIPEditFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private var readOperator: String? = null
     private var filteredReadCount: Float? = null
+    private var allWipWords = listOf<String>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -88,7 +91,33 @@ class WIPEditFragment : Fragment() {
             mBinding.etTag.setAdapter(adapter)
         }
 
+        // #18: Duplicate detection while adding WPI
+        wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { allWips ->
+            allWipWords = allWips.mapNotNull { it.wip?.trim()?.lowercase() }
 
+            // Set up autocomplete dropdown with existing words
+            val wordAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                allWips.mapNotNull { it.wip }
+            )
+            mBinding.etWord.setAdapter(wordAdapter)
+        }
+
+        mBinding.etWord.addTextChangedListener { editable ->
+            val typed = editable?.toString()?.trim()?.lowercase() ?: ""
+            if (typed.length >= 2 && id == null) { // Only show warning when adding new
+                val matches = allWipWords.filter { it.contains(typed) }
+                if (matches.isNotEmpty()) {
+                    mBinding.tvDuplicateWarning.text = "Possible duplicate: ${matches.size} existing WPI(s) match"
+                    mBinding.tvDuplicateWarning.visibility = View.VISIBLE
+                } else {
+                    mBinding.tvDuplicateWarning.visibility = View.GONE
+                }
+            } else {
+                mBinding.tvDuplicateWarning.visibility = View.GONE
+            }
+        }
 
         mBinding.apply {
             imgBack.setOnClickListener {

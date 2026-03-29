@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.rameez.hel.R
 import com.rameez.hel.adapter.CategoryAdapter
 import com.rameez.hel.adapter.CustomTagsAdapter
+import com.rameez.hel.data.model.WIPModel
 import com.rameez.hel.databinding.FragmentWIPFilterBinding
 import com.rameez.hel.viewmodel.SharedViewModel
 import com.rameez.hel.viewmodel.WIPViewModel
@@ -178,6 +179,9 @@ class WIPFilterFragment : Fragment() {
             switchAutoScroll.isChecked = false
             switchMaterial.isChecked = false
             etScrollInterval.isEnabled = false
+            cbUpdateViewCount.isChecked = true
+            cbUpdateTimestamps.isChecked = true
+            spinnerSortBy.setSelection(0)
         }
 
 
@@ -272,8 +276,12 @@ class WIPFilterFragment : Fragment() {
 
             isAutoScrollEnabled = false
             autoScrollIntervalSecs = 5
+            isAutoScrollPaused = false
             isReadAloud = false
             ttsOptions.clear()
+            updateViewCountDuringFlashcard = true
+            updateTimestampsDuringFlashcard = true
+            sortBy = null
         }
 
 
@@ -353,6 +361,20 @@ class WIPFilterFragment : Fragment() {
                 mBinding.etScrollInterval.text = null
             }
         }
+
+        // #13: Flashcard options checkboxes
+        mBinding.cbUpdateViewCount.isChecked = sharedViewModel.updateViewCountDuringFlashcard
+        mBinding.cbUpdateTimestamps.isChecked = sharedViewModel.updateTimestampsDuringFlashcard
+        mBinding.cbUpdateViewCount.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.updateViewCountDuringFlashcard = isChecked
+        }
+        mBinding.cbUpdateTimestamps.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.updateTimestampsDuringFlashcard = isChecked
+        }
+
+        // #14: Sort spinner setup
+        sortSpinnerSetup()
+
         Log.d("TAG", "onCreate: ")
 
         setUpRecyclerView()
@@ -679,8 +701,12 @@ class WIPFilterFragment : Fragment() {
 
 
             btnClearFilters.setOnClickListener {
-                // --- Clear text fields ---
                 clearAllFilters()
+            }
+
+            // #17: Show Results as list (navigates back to WIPListFragment with filter applied)
+            btnShowResults.setOnClickListener {
+                applyFiltersToViewModel()
             }
 
 
@@ -778,14 +804,15 @@ class WIPFilterFragment : Fragment() {
 
 
 
+                // #12: Allow any positive auto scroll interval
                 if (autoScrollOn) {
                     if (intervalText.isNotBlank()) {
-                        val seconds = intervalText.toInt()
-                        if (seconds in 5..60) {
+                        val seconds = intervalText.toIntOrNull()
+                        if (seconds != null && seconds > 0) {
                             sharedViewModel.isAutoScrollEnabled = true
                             sharedViewModel.autoScrollIntervalSecs = seconds
                         } else {
-                            Toast.makeText(requireContext(), "Interval must be between 5 and 60 seconds", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Interval must be a positive number", Toast.LENGTH_SHORT).show()
                             return@setOnClickListener
                         }
                     } else {
@@ -1077,19 +1104,22 @@ class WIPFilterFragment : Fragment() {
                             }
 
 
-                            if (filteredData.isNotEmpty() && filteredReadCount != null) {
-                                val from = filteredReadCount!!
+                            if (filteredData.isNotEmpty() && (filteredReadCount != null || readOperator == "null" || readOperator == "!null")) {
+                                val from = filteredReadCount ?: 0f
                                 val to = filteredReadCountTo
 
                                 filteredData = filteredData.filter { wipItem ->
-                                    val rc = wipItem.readCount ?: return@filter false
+                                    val rc = wipItem.readCount
                                     when (readOperator) {
-                                        "="  -> rc == from
-                                        ">"  -> rc > from
-                                        "<"  -> rc < from
-                                        ">=" -> rc >= from
-                                        "<=" -> rc <= from
-                                        "<>" -> to != null && rc in from..to   // ✅ BETWEEN
+                                        "null" -> rc == null || rc == 0f
+                                        "!null" -> rc != null && rc != 0f
+                                        "="  -> rc != null && rc == from
+                                        "!=" -> rc != null && rc != from
+                                        ">"  -> rc != null && rc > from
+                                        "<"  -> rc != null && rc < from
+                                        ">=" -> rc != null && rc >= from
+                                        "<=" -> rc != null && rc <= from
+                                        "<>" -> rc != null && to != null && rc in from..to
                                         else -> false
                                     }
                                 }
@@ -1113,21 +1143,21 @@ class WIPFilterFragment : Fragment() {
 
 
 
-                            if (filteredData.isNotEmpty() && filteredViewedCount != null) {
-                                val vcFilter = filteredViewedCount!!
-
-
+                            if (filteredData.isNotEmpty() && (filteredViewedCount != null || viewedOperator == "null" || viewedOperator == "!null")) {
+                                val vcFilter = filteredViewedCount ?: 0f
                                 val to = filteredViewedCountTo
                                 filteredData = filteredData.filter { wipItem ->
-                                    val vc = wipItem.displayCount ?: return@filter false
+                                    val vc = wipItem.displayCount
                                     when (viewedOperator) {
-                                        "="  -> vc == vcFilter
-                                        ">"  -> vc > vcFilter
-                                        "<"  -> vc < vcFilter
-                                        ">=" -> vc >= vcFilter
-                                        "<=" -> vc <= vcFilter
-                                        "<>" -> to != null && vc in vcFilter..to
-
+                                        "null" -> vc == null || vc == 0f
+                                        "!null" -> vc != null && vc != 0f
+                                        "="  -> vc != null && vc == vcFilter
+                                        "!=" -> vc != null && vc != vcFilter
+                                        ">"  -> vc != null && vc > vcFilter
+                                        "<"  -> vc != null && vc < vcFilter
+                                        ">=" -> vc != null && vc >= vcFilter
+                                        "<=" -> vc != null && vc <= vcFilter
+                                        "<>" -> vc != null && to != null && vc in vcFilter..to
                                         else -> false
                                     }
                                 }
@@ -1209,6 +1239,9 @@ class WIPFilterFragment : Fragment() {
 
 
 
+                            // #14: Sort filtered results
+                            filteredData = sortFilteredList(filteredData)
+
                             var limit = 0
                             if (etLimit.text.toString().isNotBlank()) {
                                 limit = mBinding.etLimit.text.toString().toInt()
@@ -1220,8 +1253,6 @@ class WIPFilterFragment : Fragment() {
                             } else {
                                 if (limit > 0) {
                                     sharedViewModel.filteredWipsList = filteredData.shuffled().take(limit).toMutableList()
-//                                    sharedViewModel.filteredWipsList =
-//                                        filteredData.take(limit).toMutableList()
                                 }
                             }
 
@@ -1309,6 +1340,116 @@ class WIPFilterFragment : Fragment() {
     }
 
 
+    private fun sortSpinnerSetup() {
+        val sortOptions = listOf(
+            "", "Last Viewed", "Last Encountered", "Created", "Para Created"
+        )
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, sortOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        mBinding.spinnerSortBy.adapter = adapter
+
+        // Restore previous selection
+        val previousSort = sharedViewModel.sortBy
+        if (previousSort != null) {
+            val idx = sortOptions.indexOf(previousSort)
+            if (idx >= 0) mBinding.spinnerSortBy.setSelection(idx)
+        }
+
+        mBinding.spinnerSortBy.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                sharedViewModel.sortBy = if (position > 0) parent.getItemAtPosition(position).toString() else null
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+    }
+
+    private fun sortFilteredList(list: List<WIPModel>): List<WIPModel> {
+        return when (sharedViewModel.sortBy) {
+            "Last Viewed" -> list.sortedByDescending { it.displayCountUpdatedAt }
+            "Last Encountered" -> list.sortedByDescending { it.readCountUpdatedAt }
+            "Created" -> list.sortedByDescending { it.createdAt }
+            "Para Created" -> list.sortedByDescending { it.lastParaCreatedAt }
+            else -> list
+        }
+    }
+
+    private fun applyFiltersToViewModel() {
+        // Build filtered list and store in shared viewmodel, then navigate back
+        buildFilteredList { filteredData ->
+            if (filteredData == null) return@buildFilteredList
+
+            sharedViewModel.filteredWipsList = filteredData.toMutableList()
+            sharedViewModel.isFilterApplied = true
+
+            // Navigate back to WIPListFragment
+            findNavController().popBackStack(R.id.WIPListFragment, false)
+        }
+    }
+
+    private fun buildFilteredList(callback: (List<WIPModel>?) -> Unit) {
+        val autoScrollOn = mBinding.switchAutoScroll.isChecked
+        val intervalText = mBinding.etScrollInterval.text.toString()
+
+        // Apply same validation as the apply filter button
+        if (autoScrollOn) {
+            if (intervalText.isNotBlank()) {
+                val seconds = intervalText.toIntOrNull()
+                if (seconds == null || seconds <= 0) {
+                    Toast.makeText(requireContext(), "Interval must be a positive number", Toast.LENGTH_SHORT).show()
+                    callback(null)
+                    return
+                }
+            }
+        }
+
+        wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { data ->
+            // Apply all the same filters
+            var filteredData = data
+
+            if (filteredWIP != null) {
+                filteredData = filteredData.filter { wipItem ->
+                    wipItem.wip?.contains(filteredWIP ?: "", ignoreCase = true) == true
+                }
+            }
+
+            if (filteredMeaning != null) {
+                filteredData = filteredData.filter { wipItem ->
+                    wipItem.meaning?.contains(filteredMeaning ?: "", true) == true
+                }
+            }
+
+            if (filteredSampleSen != null) {
+                filteredData = filteredData.filter { wipItem ->
+                    wipItem.sampleSentence?.contains(filteredSampleSen ?: "", true) == true
+                }
+            }
+
+            if (sharedViewModel.selectedCategories.isNotEmpty()) {
+                val selectedCatsLower = sharedViewModel.selectedCategories.map { it.lowercase(Locale.ROOT) }
+                filteredData = filteredData.filter { wipItem ->
+                    wipItem.category?.lowercase(Locale.ROOT) in selectedCatsLower
+                }
+            }
+
+            if (sharedViewModel.selectedTags.isNotEmpty()) {
+                val selectedTagsLower = sharedViewModel.selectedTags.map { it.lowercase(Locale.ROOT) }
+                filteredData = filteredData.filter { wipItem ->
+                    wipItem.customTag?.any { tag ->
+                        tag.lowercase(Locale.ROOT) in selectedTagsLower
+                    } ?: false
+                }
+            }
+
+            // Sort results (#14)
+            filteredData = sortFilteredList(filteredData)
+
+            callback(filteredData)
+
+            // Remove observer after first result
+            wipViewModel.getWIPs()?.removeObservers(viewLifecycleOwner)
+        }
+    }
+
     private fun updateTimerText() {
         val h = sharedViewModel.selectedHours ?: 0
         val m = sharedViewModel.selectedMins ?: 0
@@ -1345,7 +1486,7 @@ class WIPFilterFragment : Fragment() {
 
     private fun readOperatorSetup() {
         // include all operators, keep empty default at index 0
-        val readCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>")
+        val readCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         readCountsStr.add(0, "")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, readCountsStr)
         mBinding.readSpinner.setSelection(0)
@@ -1379,7 +1520,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun viewedOperatorSetup() {
-        val viewedCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>")
+        val viewedCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         viewedCountsStr.add(0, "")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, viewedCountsStr)
         mBinding.viewedSpinner.setSelection(0)
@@ -1468,7 +1609,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun lastViewedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerLastViewedOp.adapter = adapter
@@ -1486,7 +1627,7 @@ class WIPFilterFragment : Fragment() {
     }
 
     private fun firstEncounteredOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerFirstEncounteredOp.adapter = adapter
@@ -1503,7 +1644,7 @@ class WIPFilterFragment : Fragment() {
     }
 
     private fun lastEncounteredOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerLastEncounteredOp.adapter = adapter
@@ -1522,7 +1663,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun firstViewedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerFirstViewedOp.adapter = adapter
@@ -1540,7 +1681,7 @@ class WIPFilterFragment : Fragment() {
     }
 
     private fun articleCreatedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerArticleCreatedOp.adapter = adapter
@@ -1565,7 +1706,11 @@ class WIPFilterFragment : Fragment() {
         to: Long? = null
     ): Boolean {
 
-        // ❶ exclude empty / never-used timestamps
+        // #16: null/!null operators
+        if (operator == "null") return ts == null || ts == 0L
+        if (operator == "!null") return ts != null && ts != 0L
+
+        // exclude empty / never-used timestamps for other operators
         if (ts == null || ts == 0L) return false
 
         return when (operator) {
@@ -1575,6 +1720,13 @@ class WIPFilterFragment : Fragment() {
                 val minuteStart = from - (from % 60_000)
                 val minuteEnd = minuteStart + 59_999
                 ts in minuteStart..minuteEnd
+            }
+
+            // #15: NOT equal
+            "!=" -> {
+                val minuteStart = from - (from % 60_000)
+                val minuteEnd = minuteStart + 59_999
+                ts !in minuteStart..minuteEnd
             }
 
             "<"  -> ts < from

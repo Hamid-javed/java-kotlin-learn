@@ -17,6 +17,19 @@ class WIPRepository(private val wipDao: WIPDao) {
             wipItem.createdAt = now
         }
 
+        // Fix: Set timestamps when counts are non-zero on creation
+        val rc = wipItem.readCount ?: 0f
+        if (rc > 0f) {
+            if (wipItem.readCountUpdatedAt == 0L) wipItem.readCountUpdatedAt = now
+            if (wipItem.firstEncounteredAt == 0L) wipItem.firstEncounteredAt = now
+        }
+
+        val vc = wipItem.displayCount ?: 0f
+        if (vc > 0f) {
+            if (wipItem.displayCountUpdatedAt == 0L) wipItem.displayCountUpdatedAt = now
+            if (wipItem.firstViewedAt == 0L) wipItem.firstViewedAt = now
+        }
+
         wipDao.insertWIP(wipItem)
     }
 

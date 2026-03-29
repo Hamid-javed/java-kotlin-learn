@@ -44,8 +44,15 @@ HEL (Excel Reader) is a vocabulary learning and Word-In-Progress (WIP) managemen
 
 ### Learning Features
 - **Carousel Mode** - Flashcard-style learning with one word per screen
+- **Card Position Indicator** - Shows "Card X of Y" during flashcard display
+- **Music-Player Navigation** - First, Previous, Next, Last buttons for card navigation
+- **Jump to Card** - Type a card number to navigate directly to it
+- **Shuffle/Randomize** - Randomize card order via a shuffle button
 - **Text-to-Speech (TTS)** - Read words aloud with play/pause/stop controls
-- **Auto-Scroll** - Automatically advance through words at configurable intervals
+- **Auto-Scroll** - Automatically advance through words at any positive interval
+- **Pause/Resume Auto-Scroll** - Pause and resume auto-scroll during flashcard display
+- **Auto-Scroll Stops at End** - Auto-scroll stops at the last card instead of looping
+- **Count/Timestamp Update Control** - Checkboxes to control whether view counts and timestamps update during flashcard display
 - **Timer** - Set time limits for study sessions
 - **View/Read Count Tracking** - Track how many times each word has been viewed and encountered
 
@@ -60,10 +67,19 @@ HEL (Excel Reader) is a vocabulary learning and Word-In-Progress (WIP) managemen
 - **Advanced Filters**:
   - By category (multi-select)
   - By custom tags (multi-select)
-  - By read/view count (with operators: =, <, >, <=, >=)
+  - By read/view count (with operators: =, <, >, <=, >=, <>, !=, null, !null)
   - By text content (word, meaning, sample sentence)
   - By timestamps (created, modified, first viewed, first encountered, last encountered, article creation)
+  - NOT operators (!=) and null/empty value filters for all filter fields
   - By timer duration
+- **Sort Results** - Sort filtered results by Last Viewed, Last Encountered, Created, or Para Created timestamp
+- **Separate Actions** - "Show List" to view filtered results as a list, "Flashcards" to start flashcard display
+- **Duplicate Detection** - Warning shown when adding a WPI that matches existing entries
+
+### Tag Management
+- **Tag Suggestions** - Autocomplete dropdown when adding tags
+- **Selective Tag Removal** - Remove specific tags via checkbox dialog
+- **Delete All Tags** - One-click option to remove all tags from all WPIs
 
 ### Data Tracking
 - **Creation timestamp** - When the word was imported/added

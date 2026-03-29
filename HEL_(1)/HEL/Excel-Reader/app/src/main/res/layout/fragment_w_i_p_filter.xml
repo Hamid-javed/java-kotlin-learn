@@ -892,16 +892,15 @@
 
                 <EditText
                     android:id="@+id/etScrollInterval"
-                    android:layout_width="60dp"
+                    android:layout_width="72dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:hint="e.g 5"
                     android:enabled="false"
                     android:textColorHint="@color/gray"
                     android:textColor="@color/black"
-
                     android:inputType="number"
-                    android:maxLength="2"
+                    android:maxLength="4"
                     android:textAlignment="center"/>
 
                 <TextView
@@ -911,35 +910,107 @@
                     android:text=" sec" />
             </LinearLayout>
 
+            <!-- #13: Checkboxes for count/timestamp update during flashcard -->
+            <LinearLayout
+                android:id="@+id/layoutFlashcardOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/layoutAutoScroll"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="8dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Flashcard Options"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cbUpdateViewCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:checked="true"
+                    android:text="Update View Counts during flashcard" />
+
+                <CheckBox
+                    android:id="@+id/cbUpdateTimestamps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:checked="true"
+                    android:text="Update Timestamps during flashcard" />
+            </LinearLayout>
+
+            <!-- #14: Sort filter results -->
+            <TextView
+                android:id="@+id/tvSortBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Sort results by"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingStart="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutFlashcardOptions" />
+
+            <Spinner
+                android:id="@+id/spinnerSortBy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/edit_text_bg"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSortBy" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- #17: Separate Show Results and Start Flashcards buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ll2"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="16dp">
 
-
         <Button
             android:id="@+id/btnClearFilters"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="Clear Filters" />
+            android:layout_marginEnd="4dp"
+            android:text="Clear"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnShowResults"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="4dp"
+            android:text="Show List"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnApplyFilter"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:text="Apply Filter" />
+            android:layout_marginStart="4dp"
+            android:text="Flashcards"
+            android:textSize="12sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

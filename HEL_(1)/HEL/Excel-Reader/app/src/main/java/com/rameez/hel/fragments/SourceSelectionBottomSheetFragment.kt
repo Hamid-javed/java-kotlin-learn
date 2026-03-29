@@ -172,11 +172,11 @@ class SourceSelectionBottomSheetFragment : BottomSheetDialogFragment() {
                 val editText = EditText(context)
                 editText.setText(item.name)
                 
-                // Reuse same filter for editing
+                // Reuse same filter for editing (allow dots for URLs)
                 val filter = InputFilter { source, start, end, dest, dstart, dend ->
                     for (i in start until end) {
                         val char = source[i]
-                        if (char == ' ' || char == '\n' || char == '.') {
+                        if (char == ' ' || char == '\n') {
                             return@InputFilter ""
                         }
                     }

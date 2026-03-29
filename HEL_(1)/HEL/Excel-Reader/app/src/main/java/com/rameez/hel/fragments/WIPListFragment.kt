@@ -131,6 +131,15 @@ class WIPListFragment : Fragment() {
         permissionUtils = PermissionUtils(this)
         setUpRecyclerView()
 
+        // #17: Show filtered results as list when coming from filter "Show List" button
+        if (sharedViewModel.isFilterApplied && sharedViewModel.filteredWipsList.isNotEmpty()) {
+            shuffledList = ArrayList(sharedViewModel.filteredWipsList)
+            wipListAdapter.submitList(shuffledList.toList())
+            updateResultCount(shuffledList.size)
+            sharedViewModel.isFilterApplied = false
+            isFirstTime = false
+        }
+
         wipViewModel.getWIPs()?.observe(viewLifecycleOwner) {
             if (isFirstTime) {
                 mBinding.rvList.visibility = View.GONE
@@ -415,6 +424,7 @@ class WIPListFragment : Fragment() {
         val rViewed = dialogView.findViewById<TextView>(R.id.rViewed)
         val deleteWIP = dialogView.findViewById<TextView>(R.id.rAllWips)
         val rResetTags = dialogView.findViewById<TextView>(R.id.rResetTags)
+        val rDeleteAllTags = dialogView.findViewById<TextView>(R.id.rDeleteAllTags)
         val rSourceSettings = dialogView.findViewById<TextView>(R.id.rSourceSettings)
 
 
@@ -430,6 +440,26 @@ class WIPListFragment : Fragment() {
         rResetTags.setOnClickListener {
             alertDialog.dismiss()
             showResetTagsDialog().show()
+        }
+
+        // #32: Delete ALL tags from all WPIs at once
+        rDeleteAllTags.setOnClickListener {
+            alertDialog.dismiss()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Delete All Tags")
+                .setMessage("This will remove ALL tags from ALL WPIs. This cannot be undone.")
+                .setPositiveButton("Delete All") { _, _ ->
+                    wipViewModel.allTags?.observe(viewLifecycleOwner) { allTags ->
+                        if (allTags.isNotEmpty()) {
+                            wipViewModel.removeTagsFromAllWIPs(allTags)
+                            isFirstTime = true
+                            Toast.makeText(requireContext(), "All tags deleted", Toast.LENGTH_SHORT).show()
+                        }
+                        wipViewModel.allTags?.removeObservers(viewLifecycleOwner)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
 
