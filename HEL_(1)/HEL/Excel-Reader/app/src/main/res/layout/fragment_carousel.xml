@@ -120,18 +120,23 @@
         tools:listitem="@layout/carousel_item"/>
 
     <!-- Navigation bar: first, prev, position input, next, last, shuffle, pause -->
-    <LinearLayout
+    <HorizontalScrollView
         android:id="@+id/llNavigation"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#20000000"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/btnGeneratePara"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         android:paddingVertical="8dp"
-        android:paddingHorizontal="8dp"
-        android:background="#20000000"
-        app:layout_constraintBottom_toTopOf="@+id/btnGeneratePara"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:paddingHorizontal="8dp">
 
         <ImageButton
             android:id="@+id/btnFirst"
@@ -160,7 +165,7 @@
             android:layout_height="36dp"
             android:layout_marginHorizontal="8dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="#"
+            android:hint="1"
             android:inputType="number"
             android:textAlignment="center"
             android:textColor="@color/black"
@@ -232,6 +237,8 @@
             app:tint="@color/black"/>
 
     </LinearLayout>
+
+    </HorizontalScrollView>
 
     <Button
         android:id="@+id/btnGeneratePara"

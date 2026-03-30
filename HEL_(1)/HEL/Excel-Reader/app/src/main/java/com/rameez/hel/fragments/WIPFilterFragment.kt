@@ -1458,6 +1458,88 @@ class WIPFilterFragment : Fragment() {
                 }
             }
 
+            if (filteredData.isNotEmpty() && (filteredReadCount != null || readOperator == "null" || readOperator == "!null")) {
+                val from = filteredReadCount ?: 0f
+                val to = filteredReadCountTo
+                filteredData = filteredData.filter { wipItem ->
+                    val rc = wipItem.readCount
+                    when (readOperator) {
+                        "null" -> rc == null || rc == 0f
+                        "!null" -> rc != null && rc != 0f
+                        "="  -> rc != null && rc == from
+                        "!=" -> rc != null && rc != from
+                        ">"  -> rc != null && rc > from
+                        "<"  -> rc != null && rc < from
+                        ">=" -> rc != null && rc >= from
+                        "<=" -> rc != null && rc <= from
+                        "<>" -> rc != null && to != null && rc in from..to
+                        else -> false
+                    }
+                }
+            }
+
+            if (filteredData.isNotEmpty() && (filteredViewedCount != null || viewedOperator == "null" || viewedOperator == "!null")) {
+                val vcFilter = filteredViewedCount ?: 0f
+                val to = filteredViewedCountTo
+                filteredData = filteredData.filter { wipItem ->
+                    val vc = wipItem.displayCount
+                    when (viewedOperator) {
+                        "null" -> vc == null || vc == 0f
+                        "!null" -> vc != null && vc != 0f
+                        "="  -> vc != null && vc == vcFilter
+                        "!=" -> vc != null && vc != vcFilter
+                        ">"  -> vc != null && vc > vcFilter
+                        "<"  -> vc != null && vc < vcFilter
+                        ">=" -> vc != null && vc >= vcFilter
+                        "<=" -> vc != null && vc <= vcFilter
+                        "<>" -> vc != null && to != null && vc in vcFilter..to
+                        else -> false
+                    }
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredLastViewedAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.displayCountUpdatedAt, operator = lastViewedOperator, from = filteredLastViewedAt!!, to = lastViewedAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredFirstEncounteredAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.firstEncounteredAt, operator = firstEncounteredOperator, from = filteredFirstEncounteredAt!!, to = firstEncounteredAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredCreatedAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.createdAt, operator = createdOperator, from = filteredCreatedAt!!, to = createdAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredModifiedAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.modifiedAt, operator = modifiedOperator, from = filteredModifiedAt!!, to = modifiedAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredLastEncounteredAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.readCountUpdatedAt, operator = lastEncounteredOperator, from = filteredLastEncounteredAt!!, to = lastEncounteredAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredFirstViewedAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.firstViewedAt, operator = firstViewedOperator, from = filteredFirstViewedAt!!, to = firstViewedAtMillisTo)
+                }
+            }
+
+            if (filteredData.isNotEmpty() && filteredArticleCreatedAt != null) {
+                filteredData = filteredData.filter { wip ->
+                    matchDateOperator(ts = wip.lastParaCreatedAt, operator = articleCreatedOperator, from = filteredArticleCreatedAt!!, to = articleCreatedAtMillisTo)
+                }
+            }
+
             // Sort results (#14)
             filteredData = sortFilteredList(filteredData)
 

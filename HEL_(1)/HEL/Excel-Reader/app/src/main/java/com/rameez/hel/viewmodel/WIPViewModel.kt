@@ -242,6 +242,10 @@ class WIPViewModel : ViewModel() {
         wipRepository?.resetParaCreatedAt(id)
     }
 
+    fun setParaCreatedAt(id: Int, ts: Long) = viewModelScope.launch {
+        wipRepository?.updateLastParaCreatedAt(id, ts)
+    }
+
     fun clearGeneratedArticle() {
         _generatedArticle.value = null
     }

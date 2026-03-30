@@ -17,6 +17,8 @@ import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -178,6 +180,20 @@ class WIPDetailFragment : Fragment() {
         mBinding.dParaCreatedAt.setOnClickListener {
             wipViewModel.resetParaCreatedAt(id)
             mBinding.tvParaCreatedAt.text = "-"
+        }
+
+        mBinding.btnEditParaCreatedAt.setOnClickListener {
+            val cal = java.util.Calendar.getInstance()
+            DatePickerDialog(requireContext(), { _, year, month, day ->
+                TimePickerDialog(requireContext(), { _, hour, minute ->
+                    cal.set(year, month, day, hour, minute, 0)
+                    cal.set(java.util.Calendar.MILLISECOND, 0)
+                    val ts = cal.timeInMillis
+                    wipViewModel.setParaCreatedAt(id, ts)
+                    val dateFormatter = java.text.DateFormat.getDateTimeInstance()
+                    mBinding.tvParaCreatedAt.text = dateFormatter.format(Date(ts))
+                }, cal.get(java.util.Calendar.HOUR_OF_DAY), cal.get(java.util.Calendar.MINUTE), true).show()
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show()
         }
 
         textToSpeech = TextToSpeech(requireContext()) { status ->

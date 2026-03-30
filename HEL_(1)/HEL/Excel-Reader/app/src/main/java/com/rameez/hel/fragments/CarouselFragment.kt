@@ -507,6 +507,7 @@ class CarouselFragment : Fragment() {
         if (total > 0) {
             mBinding.tvCardPosition.text = "Card ${position + 1} of $total"
             mBinding.tvCardPosition.visibility = View.VISIBLE
+            mBinding.etGoToCard.hint = "${position + 1}"
         } else {
             mBinding.tvCardPosition.visibility = View.GONE
         }

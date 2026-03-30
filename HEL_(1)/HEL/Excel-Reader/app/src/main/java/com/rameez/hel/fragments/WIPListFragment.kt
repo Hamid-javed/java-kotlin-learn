@@ -466,9 +466,9 @@ class WIPListFragment : Fragment() {
         exportWIP.setOnClickListener {
             alertDialog.dismiss()
             wipViewModel.getWIPs()?.observeOnce(viewLifecycleOwner) { data ->
-                val sdf = SimpleDateFormat("yyyy-MM-dd(hh_mm_ss_a)", Locale.getDefault())
+                val sdf = SimpleDateFormat("dd_MM_yyyy_HH_mm_ss", Locale.getDefault())
                 val currentDateTime = sdf.format(Date())
-                val fileName = "HEL_$currentDateTime"
+                val fileName = "WPI_Export_$currentDateTime"
                 exportToExcel(data, fileName)
             }
         }
@@ -556,6 +556,21 @@ class WIPListFragment : Fragment() {
         contentResolver.openInputStream(uri)?.use { inputStream ->
             val workbook = WorkbookFactory.create(inputStream)
             val sheet = workbook.getSheetAt(0)
+
+            // Import Sources from second sheet if present
+            if (workbook.numberOfSheets > 1) {
+                val sourcesSheet = workbook.getSheetAt(1)
+                val importedSources = mutableListOf<com.rameez.hel.data.model.SourceModel>()
+                for (r in 1..sourcesSheet.lastRowNum) {
+                    val row = sourcesSheet.getRow(r) ?: continue
+                    val name = row.getCell(0)?.toString() ?: continue
+                    val checked = row.getCell(1)?.toString()?.trim()?.lowercase() == "true"
+                    importedSources.add(com.rameez.hel.data.model.SourceModel(name, checked))
+                }
+                if (importedSources.isNotEmpty()) {
+                    SharedPref.saveSources(requireContext(), importedSources)
+                }
+            }
             Log.d("TAG", "filledRowCount: ${getFilledRowCount(sheet)}")
             val totalRows = getFilledRowCount(sheet)
             val totalColumns = getTotalNoColumns(sheet)
@@ -761,6 +776,18 @@ class WIPListFragment : Fragment() {
             row.createCell(13).setCellValue(if (model.firstEncounteredAt > 0L) dateFormat.format(Date(model.firstEncounteredAt)) else "-")
             row.createCell(14).setCellValue(if (model.lastParaCreatedAt > 0L) dateFormat.format(Date(model.lastParaCreatedAt)) else "-")
 
+        }
+
+        // Export Sources as a separate sheet
+        val sourcesSheet = workbook.createSheet("Sources")
+        val sourcesHeader = sourcesSheet.createRow(0)
+        sourcesHeader.createCell(0).setCellValue("Name")
+        sourcesHeader.createCell(1).setCellValue("IsChecked")
+        val sources = SharedPref.getSources(requireContext())
+        sources.forEachIndexed { index, source ->
+            val srcRow = sourcesSheet.createRow(index + 1)
+            srcRow.createCell(0).setCellValue(source.name)
+            srcRow.createCell(1).setCellValue(if (source.isChecked) "true" else "false")
         }
 
         try {
