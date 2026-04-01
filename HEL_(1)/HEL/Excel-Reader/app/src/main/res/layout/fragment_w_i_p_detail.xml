@@ -62,13 +62,15 @@
                     android:orientation="horizontal">
 
 
-                    <TextView
+                    <EditText
                         android:id="@+id/txtWord"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:layout_weight="3"
                         android:fontFamily="@font/poppins_extrabold"
+                        android:background="@null"
+                        android:inputType="text"
                         tools:text="Scramble"
                         android:textSize="20sp" />
 
@@ -108,13 +110,14 @@
 
 
                     </LinearLayout>
-                    <TextView
+                    <EditText
                         android:id="@+id/txtMeaning"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:textColor="@color/black"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
-
+                        android:background="@null"
+                        android:inputType="textMultiLine"
                         tools:text="run with light steps out of fear or excitement run with light steps out of fear or excitement"
                         android:textSize="18sp" />
                 </LinearLayout>
@@ -164,12 +167,14 @@
                         app:tint="@color/black" />
 
                 </LinearLayout>
-                    <TextView
+                    <EditText
                         android:id="@+id/txtSampleSentence"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:textColor="@color/black"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
+                        android:background="@null"
+                        android:inputType="textMultiLine"
                         tools:text="The mouse scampered away from the cat into its hole."
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -188,12 +193,14 @@
                         android:textColor="@color/black"
                         android:text="Category" />
 
-                    <TextView
+                    <EditText
                         android:id="@+id/txtCategory"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:textColor="@color/black"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
+                        android:background="@null"
+                        android:inputType="text"
                         tools:text="Word"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -213,12 +220,15 @@
                         android:textColor="@color/black"
                         android:text="Tags" />
 
-                    <TextView
+                    <EditText
                         android:id="@+id/tvTags"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:textColor="@color/black"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:hint="tag1, tag2"
                         tools:text="Sports, Casual"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -229,28 +239,45 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/black"
                         android:fontFamily="@font/poppins_extrabold"
                         android:text="Viewed" />
 
+                    <ImageButton
+                        android:id="@+id/btnViewedMinus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_decrease"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="decrease viewed" />
 
                     <TextView
                         android:id="@+id/txtViewCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:minWidth="60dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:gravity="end"
+                        android:gravity="center"
                         android:textColor="@color/black"
                         tools:text="0 times"
                         android:textSize="16sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnViewedPlus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_increase"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="increase viewed" />
                 </LinearLayout>
 
                 <TextView
@@ -267,29 +294,45 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:textColor="@color/black"
                         android:fontFamily="@font/poppins_extrabold"
                         android:text="Encountered" />
 
+                    <ImageButton
+                        android:id="@+id/btnEncounterMinus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_decrease"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="decrease encountered" />
+
                     <TextView
+                        android:id="@+id/txtReadCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
+                        android:minWidth="60dp"
                         android:fontFamily="@font/poppins_medium"
-                        android:layout_weight="1"
-                        android:id="@+id/txtReadCount"
-                        android:gravity="end"
+                        android:gravity="center"
                         android:textColor="@color/black"
                         tools:text="0 times"
                         android:textSize="16sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnEncounterPlus"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_increase"
+                        app:tint="@color/black"
+                        android:background="@null"
+                        android:contentDescription="increase encountered" />
                 </LinearLayout>
 
                 <TextView
@@ -428,7 +471,7 @@
                     android:layout_marginTop="32dp"
                     android:layout_gravity="center"
                     android:id="@+id/btnEdit"
-                    android:text="Edit WIP"
+                    android:text="Save WIP"
                     />
                 <Button
                     android:layout_width="match_parent"

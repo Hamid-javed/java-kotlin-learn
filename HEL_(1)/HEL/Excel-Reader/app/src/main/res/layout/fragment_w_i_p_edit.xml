@@ -258,24 +258,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:fontFamily="@font/poppins_extrabold"
                         android:text="Viewed"
-                        android:textColor="@color/black" />
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_extrabold"
-                        android:text="Viewd"
-                        android:visibility="invisible"
-                        android:layout_marginEnd="16dp"
                         android:textColor="@color/black" />
 
                     <ImageButton
@@ -288,17 +279,16 @@
                         android:contentDescription="decrease" />
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
                         android:id="@+id/etViewedCount"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:gravity="center"
                         android:padding="6dp"
                         android:inputType="number"
-                        android:layout_marginEnd="5dp"
                         android:background="@drawable/back_box"
-                        android:text="0">
+                        android:text="0" />
 
-                    </com.google.android.material.textfield.TextInputEditText>
                     <ImageButton
                         android:id="@+id/btnViewedPlus"
                         android:layout_width="36dp"
@@ -308,33 +298,31 @@
                         android:background="@null"
                         android:contentDescription="Increase" />
 
-                    <TextView
-                        android:id="@+id/txtViewedCount"
+                    <Button
+                        android:id="@+id/btnResetViewed"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:fontFamily="@font/poppins_medium"
-                        android:gravity="end"
-                        android:text="times"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:text="Reset"
+                        android:textSize="12sp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:orientation="horizontal">
-
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="20dp"
                         android:fontFamily="@font/poppins_extrabold"
                         android:text="Encountered"
-
                         android:textColor="@color/black" />
 
                     <ImageButton
@@ -347,19 +335,16 @@
                         android:contentDescription="Decrease" />
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
                         android:id="@+id/etRadCount"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:gravity="center"
                         android:maxLines="1"
-                        android:paddingEnd="20dp"
                         android:inputType="number"
                         android:padding="6dp"
-                        android:layout_marginEnd="5dp"
                         android:background="@drawable/back_box"
-                        android:text="0">
-
-                    </com.google.android.material.textfield.TextInputEditText>
+                        android:text="0" />
 
                     <ImageButton
                         android:id="@+id/btnEncounterPlus"
@@ -370,16 +355,14 @@
                         android:background="@null"
                         android:contentDescription="Increase" />
 
-                    <TextView
-                        android:id="@+id/txtReadCount"
+                    <Button
+                        android:id="@+id/btnResetEncountered"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:fontFamily="@font/poppins_medium"
-                        android:gravity="end"
-                        android:text="times"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:layout_marginStart="8dp"
+                        android:text="Reset"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <Button

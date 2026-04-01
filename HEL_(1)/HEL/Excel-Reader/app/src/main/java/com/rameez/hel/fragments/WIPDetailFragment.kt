@@ -1,38 +1,25 @@
 package com.rameez.hel.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.util.Log
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.rameez.hel.R
 import com.rameez.hel.SharedPref
 import com.rameez.hel.databinding.FragmentWIPDetailBinding
 import com.rameez.hel.viewmodel.SharedViewModel
 import com.rameez.hel.viewmodel.WIPViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Locale
@@ -45,6 +32,8 @@ class WIPDetailFragment : Fragment() {
     private lateinit var textToSpeech:  TextToSpeech
     private var word: String = ""
     private var id: Int = 0
+    private var currentReadCount: Float = 0f
+    private var currentDisplayCount: Float = 0f
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -84,7 +73,6 @@ class WIPDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "Word cannot be empty", Toast.LENGTH_SHORT).show()
             }
         }
-        mBinding.txtSampleSentence.movementMethod = LinkMovementMethod.getInstance()
 
 
 
@@ -107,17 +95,17 @@ class WIPDetailFragment : Fragment() {
             mBinding.txtViewCount.text = "${wip.displayCount?.toInt() ?: 0} times"
 
 
+            currentReadCount = wip.readCount ?: 0f
+            currentDisplayCount = wip.displayCount ?: 0f
+
             mBinding.apply {
                 word = wip.wip.orEmpty()
-                txtWord.text = wip.wip
-                txtMeaning.text = wip.meaning
-                setSentenceWithCitation(
-                    mBinding.txtSampleSentence,
-                    wip.sampleSentence.orEmpty()
-                )
+                txtWord.setText(wip.wip)
+                txtMeaning.setText(wip.meaning)
+                txtSampleSentence.setText(wip.sampleSentence.orEmpty())
 
-                txtCategory.text = wip.category
-                tvTags.text = wip.customTag?.joinToString(", ")
+                txtCategory.setText(wip.category)
+                tvTags.setText(wip.customTag?.joinToString(", "))
                 txtReadCount.text = "${wip.readCount?.toInt() ?: 0} times"
                 txtViewCount.text = "${wip.displayCount?.toInt() ?: 0} times"
 
@@ -153,9 +141,32 @@ class WIPDetailFragment : Fragment() {
         }
 
         mBinding.btnEdit.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putInt("wip_id", id)
-            findNavController().navigate(R.id.WIPEditFragment, bundle)
+            val newWord = mBinding.txtWord.text.toString().trim()
+            val newMeaning = mBinding.txtMeaning.text.toString().trim()
+            val newSentence = mBinding.txtSampleSentence.text.toString().trim()
+            val newCategory = mBinding.txtCategory.text.toString().trim()
+            val newTags = mBinding.tvTags.text.toString()
+                .split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+
+            if (newWord.isEmpty()) {
+                Toast.makeText(requireContext(), "Word cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            wipViewModel.updateWIP(
+                id,
+                newCategory,
+                newWord,
+                newMeaning,
+                newSentence,
+                newTags,
+                currentReadCount,
+                currentDisplayCount
+            )
+            word = newWord
+            Toast.makeText(requireContext(), "WIP saved", Toast.LENGTH_SHORT).show()
         }
 
         mBinding.tvDeleteWIP.setOnClickListener {
@@ -167,14 +178,44 @@ class WIPDetailFragment : Fragment() {
             }
         }
 
+        mBinding.btnViewedPlus.setOnClickListener {
+            currentDisplayCount += 1
+            wipViewModel.updateViewedCount(id, currentDisplayCount)
+            mBinding.txtViewCount.text = "${currentDisplayCount.toInt()} times"
+        }
+
+        mBinding.btnViewedMinus.setOnClickListener {
+            if (currentDisplayCount > 0) {
+                currentDisplayCount -= 1
+                wipViewModel.updateViewedCount(id, currentDisplayCount)
+                mBinding.txtViewCount.text = "${currentDisplayCount.toInt()} times"
+            }
+        }
+
+        mBinding.btnEncounterPlus.setOnClickListener {
+            currentReadCount += 1
+            wipViewModel.updateReadCount(id, currentReadCount)
+            mBinding.txtReadCount.text = "${currentReadCount.toInt()} times"
+        }
+
+        mBinding.btnEncounterMinus.setOnClickListener {
+            if (currentReadCount > 0) {
+                currentReadCount -= 1
+                wipViewModel.updateReadCount(id, currentReadCount)
+                mBinding.txtReadCount.text = "${currentReadCount.toInt()} times"
+            }
+        }
+
         mBinding.dEncountered.setOnClickListener {
             wipViewModel.resetEncountered(id)
-            mBinding.txtReadCount.text = "0"
+            currentReadCount = 0f
+            mBinding.txtReadCount.text = "0 times"
         }
 
         mBinding.dViewed.setOnClickListener {
             wipViewModel.resetViewed(id)
-            mBinding.txtViewCount.text = "0"
+            currentDisplayCount = 0f
+            mBinding.txtViewCount.text = "0 times"
         }
 
         mBinding.dParaCreatedAt.setOnClickListener {
@@ -281,72 +322,6 @@ class WIPDetailFragment : Fragment() {
     }
 
 
-    private fun setSentenceWithCitation(textView: TextView, sentence: String) {
-        if (sentence.isBlank()) {
-            textView.text = ""
-            return
-        }
-
-        // 1. First, find a valid source URL BEFORE stripping everything out.
-        // We look for any URL that isn't a proxy.
-        val matcher = Patterns.WEB_URL.matcher(sentence)
-        var finalSourceUrl: String? = null
-        while (matcher.find()) {
-            val url = matcher.group()
-            if (!url.contains("vertexsearch.cloud.google.com", ignoreCase = true) &&
-                !url.contains("vertexaisearch.cloud.google.com", ignoreCase = true) &&
-                !url.contains("google.com/search", ignoreCase = true)) {
-                finalSourceUrl = url
-                break
-            }
-        }
-
-        // 2. Clean the text for display.
-        // We remove HTML comments, any Source: label lines, and finally ALL raw URLs.
-        var displayText = sentence
-            .replace(Regex("<!--[\\s\\S]*?-->"), "") // Remove comments
-            .replace(Regex("Source:\\s*https?://\\S+", RegexOption.IGNORE_CASE), "") // Remove specific Source lines
-        
-        // Use a matcher to remove ALL URLs found by the pattern
-        val urlMatcher = Patterns.WEB_URL.matcher(displayText)
-        displayText = urlMatcher.replaceAll("").trim()
-
-        // Remove any leftover JSON-like brackets at the end if they exist
-        displayText = displayText.replace(Regex("\\{.*\\}$"), "").trim()
-
-        val spannable = SpannableStringBuilder(displayText)
-
-        // 3. Append "Go To Source" link if we captured a valid URL in step 1.
-        if (!finalSourceUrl.isNullOrBlank()) {
-            val linkLabel = "Go To Source"
-            if (displayText.isNotEmpty()) {
-                spannable.append("\n\n")
-            }
-            
-            val startOfLink = spannable.length
-            spannable.append(linkLabel)
-
-            val clickableSpan = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    try {
-                        val normalizedUrl = if (finalSourceUrl!!.contains("://")) finalSourceUrl!! else "http://$finalSourceUrl"
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(normalizedUrl))
-                        widget.context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Toast.makeText(widget.context, "Could not open link", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.color = Color.BLUE
-                    ds.isUnderlineText = true
-                }
-            }
-            spannable.setSpan(clickableSpan, startOfLink, spannable.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        textView.text = spannable
-    }
 
 
     override fun onDestroyView() {

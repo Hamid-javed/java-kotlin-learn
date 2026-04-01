@@ -20,6 +20,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("second") {
+            storeFile = file("second-debug.keystore")
+            storePassword = "android2"
+            keyAlias = "androiddebugkey2"
+            keyPassword = "android2"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -28,8 +37,23 @@ android {
                 "proguard-rules.pro"
             )
         }
-        viewBinding {
-            enable = true
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    flavorDimensions += "version"
+    productFlavors {
+        create("original") {
+            dimension = "version"
+            // keeps default applicationId: com.rameez.hel.v2
+        }
+        create("second") {
+            dimension = "version"
+            applicationIdSuffix = ".second"
+            versionNameSuffix = "-second"
+            signingConfig = signingConfigs.getByName("second")
         }
     }
     compileOptions {

@@ -32,6 +32,7 @@ class WIPEditFragment : Fragment() {
     private var readOperator: String? = null
     private var filteredReadCount: Float? = null
     private var allWipWords = listOf<String>()
+    private var wipId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +48,7 @@ class WIPEditFragment : Fragment() {
 
         val intent = arguments
         val id = intent?.getInt("wip_id")
+        wipId = id
 
         readOperator = sharedViewModel.readOperator
         readOperatorSetup()
@@ -132,13 +134,21 @@ class WIPEditFragment : Fragment() {
                 updateCount(mBinding.etRadCount, +1, "read")
             }
             mBinding.btnEncounterMinus.setOnClickListener {
-                updateCount(mBinding.etRadCount, -1, "read") // only updates EditText
+                updateCount(mBinding.etRadCount, -1, "read")
             }
             mBinding.btnViewedPlus.setOnClickListener {
                 updateCount(mBinding.etViewedCount, +1, "view")
             }
             mBinding.btnViewedMinus.setOnClickListener {
-                updateCount(mBinding.etViewedCount, -1, "view") // only updates EditText
+                updateCount(mBinding.etViewedCount, -1, "view")
+            }
+            mBinding.btnResetViewed.setOnClickListener {
+                mBinding.etViewedCount.setText("0")
+                wipId?.let { wipViewModel.updateViewedCount(it, 0f) }
+            }
+            mBinding.btnResetEncountered.setOnClickListener {
+                mBinding.etRadCount.setText("0")
+                wipId?.let { wipViewModel.updateReadCount(it, 0f) }
             }
 
 
@@ -253,11 +263,12 @@ class WIPEditFragment : Fragment() {
         val newValue = (current + delta).coerceAtLeast(0)
         editText.setText(newValue.toString())
 
+        val currentWipId = wipId ?: return
         if (delta > 0) {
             if (type == "view") {
-                wipViewModel.incrementDisplayCount(id)
+                wipViewModel.incrementDisplayCount(currentWipId)
             } else if (type == "read") {
-                wipViewModel.incrementReadCount(id)
+                wipViewModel.incrementReadCount(currentWipId)
             }
         }
     }

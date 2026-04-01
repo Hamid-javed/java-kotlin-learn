@@ -23,7 +23,19 @@
       "Bash(find \"/c/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type f -name \"*.java\" -o -name \"*.kt\" -o -name \"*.xml\")",
       "Bash(find \"HEL_\\(1\\)/HEL/Excel-Reader\" -type f \\\\\\( -name \"*.kt\" -o -name \"*.java\" \\\\\\))",
       "Bash(xargs grep:*)",
-      "Bash(gradlew.bat assembleDebug)"
+      "Bash(gradlew.bat assembleDebug)",
+      "Bash(keytool -genkeypair -v -keystore second-debug.keystore -alias androiddebugkey2 -keyalg RSA -keysize 2048 -validity 10000 -storepass android2 -keypass android2 -dname \"CN=Debug2, OU=Debug, O=Debug, L=Unknown, ST=Unknown, C=US\")",
+      "Bash(gradlew.bat assembleSecondDebug)",
+      "Bash(cmd.exe /c \"gradlew.bat assembleSecondDebug\")",
+      "Bash(\"./gradlew.bat\" assembleSecondDebug)",
+      "Bash(./gradlew testDebugUnitTest)",
+      "Bash(./gradlew testOriginalDebugUnitTest)",
+      "Bash(adb devices:*)",
+      "Bash(./gradlew installOriginalDebug)",
+      "Bash(adb push:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb exec-out:*)",
+      "Bash(find . -name \"*.apk\" -delete)"
     ]
   }
 }

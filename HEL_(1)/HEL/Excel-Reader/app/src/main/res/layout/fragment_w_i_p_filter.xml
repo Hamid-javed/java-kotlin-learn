@@ -935,7 +935,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
                     android:checked="true"
-                    android:text="Update View Counts during flashcard" />
+                    android:text="Update Viewed Counts" />
 
                 <CheckBox
                     android:id="@+id/cbUpdateTimestamps"
@@ -943,7 +943,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
                     android:checked="true"
-                    android:text="Update Timestamps during flashcard" />
+                    android:text="Update Viewed Timestamps" />
             </LinearLayout>
 
             <!-- #14: Sort filter results -->
@@ -987,8 +987,9 @@
                     android:layout_marginStart="8dp"
                     android:text="DESC"
                     android:textSize="12sp"
+                    android:textColor="@color/white"
                     android:minWidth="80dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:backgroundTint="#1565C0" />
 
             </LinearLayout>
 
@@ -998,12 +999,15 @@
 
     <!-- #17: Separate Show Results and Start Flashcards buttons -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/ll2"
         android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="16dp">
+        android:paddingVertical="4dp">
 
         <Button
             android:id="@+id/btnClearFilters"

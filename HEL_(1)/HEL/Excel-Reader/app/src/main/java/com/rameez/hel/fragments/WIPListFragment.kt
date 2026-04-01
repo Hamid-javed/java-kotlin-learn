@@ -77,6 +77,7 @@ class WIPListFragment : Fragment() {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     private var latestArticle: ArticleModel? = null
+    private var isAscending = true
 
     override fun onStart() {
         super.onStart()
@@ -135,6 +136,7 @@ class WIPListFragment : Fragment() {
         if (sharedViewModel.isFilterApplied && sharedViewModel.filteredWipsList.isNotEmpty()) {
             shuffledList = ArrayList(sharedViewModel.filteredWipsList)
             wipListAdapter.submitList(shuffledList.toList())
+            mBinding.rvList.scrollToPosition(0)
             updateResultCount(shuffledList.size)
             sharedViewModel.isFilterApplied = false
             isFirstTime = false
@@ -215,7 +217,7 @@ class WIPListFragment : Fragment() {
         mBinding.apply {
 
             listOrientation.setOnClickListener {
-                changeRvOrientation()
+                toggleSort()
             }
 
             imgImportExport.setOnClickListener {
@@ -384,26 +386,15 @@ class WIPListFragment : Fragment() {
         }
     }
 
-    private fun changeRvOrientation() {
-
-        mBinding.apply {
-
-            listOrientation.setOnClickListener {
-                val layoutManager = rvList.layoutManager
-                if (layoutManager is LinearLayoutManager) {
-                    val orientation = layoutManager.orientation
-                    if (orientation == LinearLayoutManager.VERTICAL) {
-                        rvList.layoutManager = LinearLayoutManager(
-                            requireContext(),
-                            LinearLayoutManager.HORIZONTAL,
-                            false
-                        )
-                    } else {
-                        rvList.layoutManager = LinearLayoutManager(requireContext())
-                    }
-                }
-            }
+    private fun toggleSort() {
+        isAscending = !isAscending
+        val sorted = if (isAscending) {
+            shuffledList.sortedBy { it.wip?.lowercase() }
+        } else {
+            shuffledList.sortedByDescending { it.wip?.lowercase() }
         }
+        wipListAdapter.submitList(sorted)
+        mBinding.rvList.scrollToPosition(0)
     }
 
     fun <T> LiveData<T>.observeOnce(owner: LifecycleOwner, observer: (T) -> Unit) {

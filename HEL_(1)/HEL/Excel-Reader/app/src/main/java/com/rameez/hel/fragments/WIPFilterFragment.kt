@@ -838,13 +838,13 @@ class WIPFilterFragment : Fragment() {
 
 
 
-                if (lastViewedOperator == "<>" &&
+                if ((lastViewedOperator == "<>" || lastViewedOperator == "!<>") &&
                     (filteredLastViewedAt == null || lastViewedAtMillisTo == null)) {
                     Toast.makeText(requireContext(), "Enter Last Viewed date range", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                if (lastViewedOperator == "<>" &&
+                if ((lastViewedOperator == "<>" || lastViewedOperator == "!<>") &&
                     filteredLastViewedAt!! > lastViewedAtMillisTo!!) {
                     Toast.makeText(requireContext(), "'From' must be before 'To'", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -853,14 +853,14 @@ class WIPFilterFragment : Fragment() {
 
 
 
-                if (lastEncounteredOperator == "<>" &&
+                if ((lastEncounteredOperator == "<>" || lastEncounteredOperator == "!<>") &&
                     (filteredLastEncounteredAt == null || lastEncounteredAtMillisTo == null)) {
                     Toast.makeText(requireContext(), "Enter Last Encountered range", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
 
-                if (firstViewedOperator == "<>" &&
+                if ((firstViewedOperator == "<>" || firstViewedOperator == "!<>") &&
                     (filteredFirstViewedAt == null || firstViewedAtMillisTo == null)) {
                     Toast.makeText(requireContext(), "Enter First Viewed range", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -868,26 +868,26 @@ class WIPFilterFragment : Fragment() {
 
 
 
-                if (firstEncounteredOperator == "<>" &&
+                if ((firstEncounteredOperator == "<>" || firstEncounteredOperator == "!<>") &&
                     (filteredFirstEncounteredAt == null || firstEncounteredAtMillisTo == null)) {
                     Toast.makeText(requireContext(), "Enter First Encountered date range", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                if (firstEncounteredOperator == "<>" &&
+                if ((firstEncounteredOperator == "<>" || firstEncounteredOperator == "!<>") &&
                     filteredFirstEncounteredAt!! > firstEncounteredAtMillisTo!!) {
                     Toast.makeText(requireContext(), "'From' must be before 'To'", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
                 // ARTICLE CREATED range sanity check
-                if (articleCreatedOperator == "<>" &&
+                if ((articleCreatedOperator == "<>" || articleCreatedOperator == "!<>") &&
                     (filteredArticleCreatedAt == null || articleCreatedAtMillisTo == null)) {
                     Toast.makeText(requireContext(), "Enter Article Created range", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                if (articleCreatedOperator == "<>" &&
+                if ((articleCreatedOperator == "<>" || articleCreatedOperator == "!<>") &&
                     filteredArticleCreatedAt!! > articleCreatedAtMillisTo!!) {
                     Toast.makeText(requireContext(), "'From' must be before 'To'", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -895,7 +895,7 @@ class WIPFilterFragment : Fragment() {
 
 
                 // READ
-                if (readOperator == "<>") {
+                if (readOperator == "<>" || readOperator == "!<>") {
                     if (etReadCount.text.isNullOrBlank() || etReadCountTo.text.isNullOrBlank()) {
                         Toast.makeText(requireContext(), "Enter Read count range", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -904,7 +904,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
 // VIEWED
-                if (viewedOperator == "<>") {
+                if (viewedOperator == "<>" || viewedOperator == "!<>") {
                     if (etViewedCount.text.isNullOrBlank() || etViewedCountTo.text.isNullOrBlank()) {
                         Toast.makeText(requireContext(), "Enter Viewed count range", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -913,7 +913,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
                 // CREATED
-                if (createdOperator == "<>") {
+                if (createdOperator == "<>" || createdOperator == "!<>") {
                     if (etCreatedAt.text.isNullOrBlank() || etCreatedAtTo.text.isNullOrBlank() ||
                         createdAtMillis == null || createdAtMillisTo == null) {
                         Toast.makeText(requireContext(), "Enter Created date range", Toast.LENGTH_SHORT).show()
@@ -922,7 +922,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
 // MODIFIED
-                if (modifiedOperator == "<>") {
+                if (modifiedOperator == "<>" || modifiedOperator == "!<>") {
                     if (etModifiedAt.text.isNullOrBlank() || etModifiedAtTo.text.isNullOrBlank() ||
                         modifiedAtMillis == null || modifiedAtMillisTo == null) {
                         Toast.makeText(requireContext(), "Enter Modified date range", Toast.LENGTH_SHORT).show()
@@ -932,7 +932,7 @@ class WIPFilterFragment : Fragment() {
 
 
 // READ range sanity check
-                if (readOperator == "<>" && filteredReadCount != null && filteredReadCountTo != null) {
+                if ((readOperator == "<>" || readOperator == "!<>") && filteredReadCount != null && filteredReadCountTo != null) {
                     if (filteredReadCount!! > filteredReadCountTo!!) {
                         Toast.makeText(requireContext(), "Read count 'From' must be less than or equal to 'To'", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -940,7 +940,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
 // VIEWED range sanity check
-                if (viewedOperator == "<>" && filteredViewedCount != null && filteredViewedCountTo != null) {
+                if ((viewedOperator == "<>" || viewedOperator == "!<>") && filteredViewedCount != null && filteredViewedCountTo != null) {
                     if (filteredViewedCount!! > filteredViewedCountTo!!) {
                         Toast.makeText(requireContext(), "Viewed count 'From' must be less than or equal to 'To'", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -948,7 +948,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
 // CREATED range sanity check
-                if (createdOperator == "<>" && filteredCreatedAt != null && createdAtMillisTo != null) {
+                if ((createdOperator == "<>" || createdOperator == "!<>") && filteredCreatedAt != null && createdAtMillisTo != null) {
                     if (filteredCreatedAt!! > createdAtMillisTo!!) {
                         Toast.makeText(requireContext(), "Created 'From' must be before 'To'", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -956,7 +956,7 @@ class WIPFilterFragment : Fragment() {
                 }
 
 // MODIFIED range sanity check
-                if (modifiedOperator == "<>" && filteredModifiedAt != null && modifiedAtMillisTo != null) {
+                if ((modifiedOperator == "<>" || modifiedOperator == "!<>") && filteredModifiedAt != null && modifiedAtMillisTo != null) {
                     if (filteredModifiedAt!! > modifiedAtMillisTo!!) {
                         Toast.makeText(requireContext(), "Modified 'From' must be before 'To'", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
@@ -1029,27 +1029,27 @@ class WIPFilterFragment : Fragment() {
 
                         var filteredData = data
 
-                        if (readOperator != "<>") {
+                        if (readOperator != "<>" && readOperator != "!<>") {
                             etReadCountTo.text = null
                             filteredReadCountTo = null
                         }
 
-                        if (viewedOperator != "<>") {
+                        if (viewedOperator != "<>" && viewedOperator != "!<>") {
                             etViewedCountTo.text = null
                             filteredViewedCountTo = null
                         }
 
-                        if (createdOperator != "<>") {
+                        if (createdOperator != "<>" && createdOperator != "!<>") {
                             etCreatedAtTo.text = null
                             createdAtMillisTo = null
                         }
 
-                        if (modifiedOperator != "<>") {
+                        if (modifiedOperator != "<>" && modifiedOperator != "!<>") {
                             etModifiedAtTo.text = null
                             modifiedAtMillisTo = null
                         }
 
-                        if (articleCreatedOperator != "<>") {
+                        if (articleCreatedOperator != "<>" && articleCreatedOperator != "!<>") {
                             etArticleCreatedAtTo.text = null
                             articleCreatedAtMillisTo = null
                         }
@@ -1122,6 +1122,7 @@ class WIPFilterFragment : Fragment() {
                                         ">=" -> rc != null && rc >= from
                                         "<=" -> rc != null && rc <= from
                                         "<>" -> rc != null && to != null && rc in from..to
+                        "!<>" -> rc != null && to != null && rc !in from..to
                                         else -> false
                                     }
                                 }
@@ -1160,6 +1161,7 @@ class WIPFilterFragment : Fragment() {
                                         ">=" -> vc != null && vc >= vcFilter
                                         "<=" -> vc != null && vc <= vcFilter
                                         "<>" -> vc != null && to != null && vc in vcFilter..to
+                        "!<>" -> vc != null && to != null && vc !in vcFilter..to
                                         else -> false
                                     }
                                 }
@@ -1344,7 +1346,7 @@ class WIPFilterFragment : Fragment() {
 
     private fun sortSpinnerSetup() {
         val sortOptions = listOf(
-            "", "Last Viewed", "Last Encountered", "Created", "Para Created"
+            "", "Last Viewed", "Last Encountered", "Created", "Modified", "Para Created", "Viewed Count", "Encountered Count"
         )
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, sortOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -1386,7 +1388,10 @@ class WIPFilterFragment : Fragment() {
             "Last Viewed" -> if (asc) list.sortedBy { it.displayCountUpdatedAt } else list.sortedByDescending { it.displayCountUpdatedAt }
             "Last Encountered" -> if (asc) list.sortedBy { it.readCountUpdatedAt } else list.sortedByDescending { it.readCountUpdatedAt }
             "Created" -> if (asc) list.sortedBy { it.createdAt } else list.sortedByDescending { it.createdAt }
+            "Modified" -> if (asc) list.sortedBy { it.modifiedAt } else list.sortedByDescending { it.modifiedAt }
             "Para Created" -> if (asc) list.sortedBy { it.lastParaCreatedAt } else list.sortedByDescending { it.lastParaCreatedAt }
+            "Viewed Count" -> if (asc) list.sortedBy { it.displayCount ?: 0f } else list.sortedByDescending { it.displayCount ?: 0f }
+            "Encountered Count" -> if (asc) list.sortedBy { it.readCount ?: 0f } else list.sortedByDescending { it.readCount ?: 0f }
             else -> list
         }
     }
@@ -1473,6 +1478,7 @@ class WIPFilterFragment : Fragment() {
                         ">=" -> rc != null && rc >= from
                         "<=" -> rc != null && rc <= from
                         "<>" -> rc != null && to != null && rc in from..to
+                        "!<>" -> rc != null && to != null && rc !in from..to
                         else -> false
                     }
                 }
@@ -1493,6 +1499,7 @@ class WIPFilterFragment : Fragment() {
                         ">=" -> vc != null && vc >= vcFilter
                         "<=" -> vc != null && vc <= vcFilter
                         "<>" -> vc != null && to != null && vc in vcFilter..to
+                        "!<>" -> vc != null && to != null && vc !in vcFilter..to
                         else -> false
                     }
                 }
@@ -1586,7 +1593,7 @@ class WIPFilterFragment : Fragment() {
 
     private fun readOperatorSetup() {
         // include all operators, keep empty default at index 0
-        val readCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val readCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         readCountsStr.add(0, "")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, readCountsStr)
         mBinding.readSpinner.setSelection(0)
@@ -1606,7 +1613,7 @@ class WIPFilterFragment : Fragment() {
                         Log.d("TAG", "readOperator set to $readOperator")
 
                         mBinding.etReadCountTo.visibility =
-                            if (readOperator == "<>") View.VISIBLE else View.GONE
+                            if (readOperator == "<>" || readOperator == "!<>") View.VISIBLE else View.GONE
                     }
                 } else {
                     readOperator = null
@@ -1620,7 +1627,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun viewedOperatorSetup() {
-        val viewedCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val viewedCountsStr = mutableListOf("=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         viewedCountsStr.add(0, "")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, viewedCountsStr)
         mBinding.viewedSpinner.setSelection(0)
@@ -1641,7 +1648,7 @@ class WIPFilterFragment : Fragment() {
                             Log.d("TAG", "viewedOperator set to $viewedOperator")
 
                             mBinding.etViewedCountTo.visibility =
-                                if (viewedOperator == "<>") View.VISIBLE else View.GONE
+                                if (viewedOperator == "<>" || viewedOperator == "!<>") View.VISIBLE else View.GONE
                         }
                     } else {
                         viewedOperator = null
@@ -1656,8 +1663,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun createdOperatorSetup() {
-        val ops = mutableListOf("=", "<", ">", "<=", ">=", "<>")
-        ops.add(0, "") // keep same pattern (empty default)
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         mBinding.spinnerCreatedOp.setSelection(0)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -1669,9 +1675,7 @@ class WIPFilterFragment : Fragment() {
                     if (selectedItem.toString() != "") {
                         createdOperator = selectedItem.toString()
                         mBinding.etCreatedAtTo.visibility =
-                            if (createdOperator == "<>") View.VISIBLE else View.GONE
-
-
+                            if (createdOperator == "<>" || createdOperator == "!<>") View.VISIBLE else View.GONE
                     }
                 } else {
                     createdOperator = null
@@ -1682,8 +1686,7 @@ class WIPFilterFragment : Fragment() {
     }
 
     private fun modifiedOperatorSetup() {
-        val ops = mutableListOf("=", "<", ">", "<=", ">=", "<>")
-        ops.add(0, "")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         mBinding.spinnerModifiedOp.setSelection(0)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -1696,7 +1699,7 @@ class WIPFilterFragment : Fragment() {
                         modifiedOperator = selectedItem.toString()
 
                         mBinding.etModifiedAtTo.visibility =
-                            if (modifiedOperator == "<>") View.VISIBLE else View.GONE
+                            if (modifiedOperator == "<>" || modifiedOperator == "!<>") View.VISIBLE else View.GONE
 
                     }
                 } else {
@@ -1709,7 +1712,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun lastViewedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerLastViewedOp.adapter = adapter
@@ -1720,14 +1723,14 @@ class WIPFilterFragment : Fragment() {
                 override fun onItemSelected(p: AdapterView<*>, v: View?, pos: Int, id: Long) {
                     lastViewedOperator = p.getItemAtPosition(pos).toString().takeIf { it.isNotBlank() }
                     mBinding.etLastViewedAtTo.visibility =
-                        if (lastViewedOperator == "<>") View.VISIBLE else View.GONE
+                        if (lastViewedOperator == "<>" || lastViewedOperator == "!<>") View.VISIBLE else View.GONE
                 }
                 override fun onNothingSelected(p: AdapterView<*>) {}
             }
     }
 
     private fun firstEncounteredOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerFirstEncounteredOp.adapter = adapter
@@ -1737,14 +1740,14 @@ class WIPFilterFragment : Fragment() {
                 override fun onItemSelected(p: AdapterView<*>, v: View?, pos: Int, id: Long) {
                     firstEncounteredOperator = p.getItemAtPosition(pos).toString().takeIf { it.isNotBlank() }
                     mBinding.etFirstEncounteredAtTo.visibility =
-                        if (firstEncounteredOperator == "<>") View.VISIBLE else View.GONE
+                        if (firstEncounteredOperator == "<>" || firstEncounteredOperator == "!<>") View.VISIBLE else View.GONE
                 }
                 override fun onNothingSelected(p: AdapterView<*>) {}
             }
     }
 
     private fun lastEncounteredOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerLastEncounteredOp.adapter = adapter
@@ -1755,7 +1758,7 @@ class WIPFilterFragment : Fragment() {
                     lastEncounteredOperator =
                         p.getItemAtPosition(pos).toString().takeIf { it.isNotBlank() }
                     mBinding.etLastEncounteredAtTo.visibility =
-                        if (lastEncounteredOperator == "<>") View.VISIBLE else View.GONE
+                        if (lastEncounteredOperator == "<>" || lastEncounteredOperator == "!<>") View.VISIBLE else View.GONE
                 }
                 override fun onNothingSelected(p: AdapterView<*>) {}
             }
@@ -1763,7 +1766,7 @@ class WIPFilterFragment : Fragment() {
 
 
     private fun firstViewedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerFirstViewedOp.adapter = adapter
@@ -1774,14 +1777,14 @@ class WIPFilterFragment : Fragment() {
                     firstViewedOperator =
                         p.getItemAtPosition(pos).toString().takeIf { it.isNotBlank() }
                     mBinding.etFirstViewedAtTo.visibility =
-                        if (firstViewedOperator == "<>") View.VISIBLE else View.GONE
+                        if (firstViewedOperator == "<>" || firstViewedOperator == "!<>") View.VISIBLE else View.GONE
                 }
                 override fun onNothingSelected(p: AdapterView<*>) {}
             }
     }
 
     private fun articleCreatedOperatorSetup() {
-        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!=", "null", "!null")
+        val ops = mutableListOf("", "=", "<", ">", "<=", ">=", "<>", "!<>", "!=", "null", "!null")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ops)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mBinding.spinnerArticleCreatedOp.adapter = adapter
@@ -1792,7 +1795,7 @@ class WIPFilterFragment : Fragment() {
                     articleCreatedOperator =
                         p.getItemAtPosition(pos).toString().takeIf { it.isNotBlank() }
                     mBinding.etArticleCreatedAtTo.visibility =
-                        if (articleCreatedOperator == "<>") View.VISIBLE else View.GONE
+                        if (articleCreatedOperator == "<>" || articleCreatedOperator == "!<>") View.VISIBLE else View.GONE
                 }
                 override fun onNothingSelected(p: AdapterView<*>) {}
             }
@@ -1837,6 +1840,11 @@ class WIPFilterFragment : Fragment() {
             "<>" -> {
                 if (to == null) false
                 else ts in from..to
+            }
+
+            "!<>" -> {
+                if (to == null) false
+                else ts !in from..to
             }
 
             else -> false
