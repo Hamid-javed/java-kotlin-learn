@@ -1,0 +1,97 @@
+﻿> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preOriginalDebugBuild UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsOriginalDebug UP-TO-DATE
+> Task :app:generateOriginalDebugResValues UP-TO-DATE
+> Task :app:generateOriginalDebugResources UP-TO-DATE
+> Task :app:mergeOriginalDebugResources UP-TO-DATE
+> Task :app:packageOriginalDebugResources UP-TO-DATE
+> Task :app:parseOriginalDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesOriginalDebug UP-TO-DATE
+> Task :app:checkOriginalDebugAarMetadata UP-TO-DATE
+> Task :app:mapOriginalDebugSourceSetPaths UP-TO-DATE
+> Task :app:createOriginalDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksOriginalDebug UP-TO-DATE
+> Task :app:processOriginalDebugMainManifest UP-TO-DATE
+> Task :app:processOriginalDebugManifest UP-TO-DATE
+> Task :app:processOriginalDebugManifestForPackage UP-TO-DATE
+> Task :app:processOriginalDebugResources UP-TO-DATE
+> Task :app:kaptGenerateStubsOriginalDebugKotlin UP-TO-DATE
+> Task :app:kaptOriginalDebugKotlin UP-TO-DATE
+
+> Task :app:compileOriginalDebugKotlin FAILED
+.\gradlew.bat : e: file:///C:/Users/ha
+mid/OneDrive/Desktop/Java%20Kotlin/App
+Code_WithoutGenAi/HEL_(1)/HEL/Excel-Re
+ader/app/src/main/java/com/rameez/hel/
+fragments/WIPDetailFragment.kt:164:100
+ Unresolved reference 'R'.
+At line:1 char:1
++ .\gradlew.bat 
+compileOriginalDebugKotlin > 
+compile_out.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpec 
+   ified: (e: file:///C:/U... refere  
+  nce 'R'.:String) [], RemoteExcept   
+ ion
+    + FullyQualifiedErrorId : NativeC 
+   ommandError
+ 
+e: file:///C:/Users/hamid/OneDrive/Des
+ktop/Java%20Kotlin/AppCode_WithoutGenA
+i/HEL_(1)/HEL/Excel-Reader/app/src/mai
+n/java/com/rameez/hel/fragments/WIPDet
+ailFragment.kt:347:40 Unresolved 
+reference 'R'.
+e: file:///C:/Users/hamid/OneDrive/Des
+ktop/Java%20Kotlin/AppCode_WithoutGenA
+i/HEL_(1)/HEL/Excel-Reader/app/src/mai
+n/java/com/rameez/hel/fragments/WIPDet
+ailFragment.kt:349:35 Unresolved 
+reference 'findViewById'.
+e: file:///C:/Users/hamid/OneDrive/Des
+ktop/Java%20Kotlin/AppCode_WithoutGenA
+i/HEL_(1)/HEL/Excel-Reader/app/src/mai
+n/java/com/rameez/hel/fragments/WIPDet
+ailFragment.kt:349:105 Unresolved 
+reference 'R'.
+e: file:///C:/Users/hamid/OneDrive/Des
+ktop/Java%20Kotlin/AppCode_WithoutGenA
+i/HEL_(1)/HEL/Excel-Reader/app/src/mai
+n/java/com/rameez/hel/fragments/WIPDet
+ailFragment.kt:350:36 Unresolved 
+reference 'findViewById'.
+e: file:///C:/Users/hamid/OneDrive/Des
+ktop/Java%20Kotlin/AppCode_WithoutGenA
+i/HEL_(1)/HEL/Excel-Reader/app/src/mai
+n/java/com/rameez/hel/fragments/WIPDet
+ailFragment.kt:350:77 Unresolved 
+reference 'R'.
+
+FAILURE: Build failed with an 
+exception.
+
+* What went wrong:
+Execution failed for task 
+':app:compileOriginalDebugKotlin'.
+> A failure occurred while executing o
+rg.jetbrains.kotlin.compilerRunner.Gra
+dleCompilerRunnerWithWorkers$GradleKot
+linCompilerWorkAction
+   > Compilation error. See log for 
+more details
+
+* Try:
+> Run with --stacktrace option to get 
+the stack trace.
+> Run with --info or --debug option 
+to get more log output.
+> Run with --scan to get full 
+insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 2s
+18 actionable tasks: 1 executed, 17 up-to-date

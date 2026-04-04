@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.rameez.hel.SharedPref
+import com.rameez.hel.R
 import com.rameez.hel.databinding.FragmentWIPDetailBinding
 import com.rameez.hel.viewmodel.SharedViewModel
 import com.rameez.hel.viewmodel.WIPViewModel
@@ -105,7 +106,10 @@ class WIPDetailFragment : Fragment() {
                 txtSampleSentence.setText(wip.sampleSentence.orEmpty())
 
                 txtCategory.setText(wip.category)
-                tvTags.setText(wip.customTag?.joinToString(", "))
+                mBinding.llTagsContainer.removeAllViews()
+                wip.customTag?.filter { t -> t.isNotBlank() }?.forEach { tag ->
+                    addTagRow(tag)
+                }
                 txtReadCount.text = "${wip.readCount?.toInt() ?: 0} times"
                 txtViewCount.text = "${wip.displayCount?.toInt() ?: 0} times"
 
@@ -139,16 +143,31 @@ class WIPDetailFragment : Fragment() {
 //            updateReadCount()
             findNavController().navigateUp()
         }
+        
+        mBinding.btnAddTag.setOnClickListener {
+            val tag = mBinding.etTag.text?.toString()?.trim()
+            if (!tag.isNullOrEmpty()) {
+                addTagRow(tag)
+            }
+            mBinding.etTag.setText("")
+        }
 
         mBinding.btnEdit.setOnClickListener {
             val newWord = mBinding.txtWord.text.toString().trim()
             val newMeaning = mBinding.txtMeaning.text.toString().trim()
             val newSentence = mBinding.txtSampleSentence.text.toString().trim()
             val newCategory = mBinding.txtCategory.text.toString().trim()
-            val newTags = mBinding.tvTags.text.toString()
-                .split(",")
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
+            
+            // Collect directly from dynamic row layout
+            val newTags = mutableListOf<String>()
+            for (i in 0 until mBinding.llTagsContainer.childCount) {
+                val row = mBinding.llTagsContainer.getChildAt(i)
+                val et = row.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etInlineTag)
+                val tagText = et?.text?.toString()?.trim()
+                if (!tagText.isNullOrEmpty()) {
+                    newTags.add(tagText)
+                }
+            }
 
             if (newWord.isEmpty()) {
                 Toast.makeText(requireContext(), "Word cannot be empty", Toast.LENGTH_SHORT).show()
@@ -323,6 +342,22 @@ class WIPDetailFragment : Fragment() {
 
 
 
+
+    private fun addTagRow(tag: String) {
+        val inflater = LayoutInflater.from(requireContext())
+        val rowView = inflater.inflate(R.layout.item_tag_edit_row, mBinding.llTagsContainer, false)
+        
+        val etInlineTag = rowView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etInlineTag)
+        val btnDeleteTag = rowView.findViewById<android.widget.ImageButton>(R.id.btnDeleteTag)
+        
+        etInlineTag.setText(tag)
+        
+        btnDeleteTag.setOnClickListener {
+            mBinding.llTagsContainer.removeView(rowView)
+        }
+        
+        mBinding.llTagsContainer.addView(rowView)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

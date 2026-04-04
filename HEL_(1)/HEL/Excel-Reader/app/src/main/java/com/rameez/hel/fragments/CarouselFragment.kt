@@ -294,13 +294,14 @@ class CarouselFragment : Fragment() {
         lifecycleScope.launch {
             val list = wipViewModel.getWIPs2() ?: emptyList()
 
-            val finalList = if (sharedViewModel.isFilterApplied) {
-                list.filter { it.id in idsList }
+            val finalList = if (sharedViewModel.isFilterApplied || idsList.isNotEmpty()) {
+                // Ensure we maintain the exact sort/shuffle order established in the filter fragment
+                idsList.mapNotNull { id -> list.find { it.id == id } }
             } else {
-                list
+                list.shuffled() // Default random order if no filters at all
             }
 
-            shuffledList = finalList.toList()
+            shuffledList = finalList
             carouselAdapter.submitList(shuffledList) {
                 val posToScroll = sharedViewModel.itemPos ?: 0
                 if (posToScroll in shuffledList.indices) {

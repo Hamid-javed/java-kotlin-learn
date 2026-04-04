@@ -133,11 +133,26 @@ class WIPListFragment : Fragment() {
         setUpRecyclerView()
 
         // #17: Show filtered results as list when coming from filter "Show List" button
-        if (sharedViewModel.isFilterApplied && sharedViewModel.filteredWipsList.isNotEmpty()) {
-            shuffledList = ArrayList(sharedViewModel.filteredWipsList)
-            wipListAdapter.submitList(shuffledList.toList())
-            mBinding.rvList.scrollToPosition(0)
-            updateResultCount(shuffledList.size)
+        if (sharedViewModel.isFilterApplied) {
+            val idsList = sharedViewModel.filteredWipsList.mapNotNull { it.id }
+            
+            lifecycleScope.launch {
+                mBinding.rvList.visibility = View.GONE
+                mBinding.progressbar.visibility = View.VISIBLE
+                
+                val freshList = wipViewModel.getWIPs2() ?: emptyList()
+                val finalList = idsList.mapNotNull { id -> freshList.find { it.id == id } }
+                
+                shuffledList = ArrayList(finalList)
+                wipListAdapter.submitList(shuffledList.toList()) {
+                    mBinding.rvList.scrollToPosition(0)
+                }
+                
+                mBinding.rvList.visibility = View.VISIBLE
+                mBinding.progressbar.visibility = View.GONE
+                updateResultCount(shuffledList.size)
+            }
+            
             sharedViewModel.isFilterApplied = false
             isFirstTime = false
         }
@@ -834,8 +849,6 @@ class WIPListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updateResultCount(wipListAdapter.currentList.size)
-        isFirstTime = true
-
     }
     private fun showDeleteWIPDialog(): AlertDialog {
         val dialogView =

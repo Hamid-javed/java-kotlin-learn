@@ -16,6 +16,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import com.rameez.hel.R
 import com.rameez.hel.data.model.WIPModel
@@ -61,23 +62,16 @@ class WIPEditFragment : Fragment() {
                     etMeaning.setText(it.meaning)
                     etSampleSentence.setText(it.sampleSentence)
                     etCategory.setText((it.category))
-                    tvTags.text = it?.customTag?.joinToString(", ")
                     if (it.readCount != null) etRadCount.setText(it.readCount!!.toInt().toString())
                     if (it.displayCount != null) etViewedCount.setText(
                         it.displayCount!!.toInt().toString()
                     )
 
-                    tagsList = ArrayList(it.customTag ?: emptyList())
-
-                }
-                if(sharedViewModel.notDeletedTags != null) {
-                    mBinding.tvTags.text = sharedViewModel.notDeletedTags?.joinToString(", ")
-                    sharedViewModel.notDeletedTags = null
-                }
-                if(mBinding.tvTags.text.isNotBlank()) {
-                    mBinding.ivDeleteTags.visibility = View.VISIBLE
-                } else {
-                    mBinding.ivDeleteTags.visibility = View.GONE
+                    val initialTags = it.customTag ?: emptyList()
+                    mBinding.llTagsContainer.removeAllViews()
+                    initialTags.filter { t -> t.isNotBlank() }.forEach { t ->
+                        addTagRow(t)
+                    }
                 }
             }
         } else {
@@ -157,10 +151,17 @@ class WIPEditFragment : Fragment() {
                 val wip = etWord.text.toString().trim()
                 val meaning = etMeaning.text.toString().trim()
                 val sampleSentence = etSampleSentence.text.toString().trim()
-                val tags = tvTags.text
-                    .split(",")
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }   // 🔥 CRITICAL
+                
+                // Read tags directly from the container
+                val tags = mutableListOf<String>()
+                for (i in 0 until mBinding.llTagsContainer.childCount) {
+                    val row = mBinding.llTagsContainer.getChildAt(i)
+                    val et = row.findViewById<TextInputEditText>(R.id.etInlineTag)
+                    val tagText = et?.text?.toString()?.trim()
+                    if (!tagText.isNullOrEmpty()) {
+                        tags.add(tagText)
+                    }
+                }
 
                 val readCount = etRadCount.text.toString().toFloatOrNull() ?: 0f
                 val viewCount = etViewedCount.text.toString().toFloatOrNull() ?: 0f
@@ -232,23 +233,11 @@ class WIPEditFragment : Fragment() {
             btnAddTag.setOnClickListener {
                 val tag = etTag.text?.toString()?.trim()
 
-                if (!tag.isNullOrEmpty() && !tagsList.contains(tag)) {
-                    tagsList.add(tag)
-                    tvTags.text = tagsList.joinToString(", ")
-                    ivDeleteTags.visibility = View.VISIBLE
+                if (!tag.isNullOrEmpty()) {
+                    addTagRow(tag)
                 }
 
                 etTag.setText("")
-            }
-
-
-            ivDeleteTags.setOnClickListener {
-                if(id != null) {
-                    val bundle = Bundle()
-                    bundle.putInt("wip_id", id)
-                    findNavController().navigate(R.id.deleteTagsFragment, bundle)
-                }
-
             }
 
         }
@@ -257,6 +246,22 @@ class WIPEditFragment : Fragment() {
     }
 
 
+
+    private fun addTagRow(tag: String) {
+        val inflater = LayoutInflater.from(requireContext())
+        val rowView = inflater.inflate(R.layout.item_tag_edit_row, mBinding.llTagsContainer, false)
+        
+        val etInlineTag = rowView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etInlineTag)
+        val btnDeleteTag = rowView.findViewById<android.widget.ImageButton>(R.id.btnDeleteTag)
+        
+        etInlineTag.setText(tag)
+        
+        btnDeleteTag.setOnClickListener {
+            mBinding.llTagsContainer.removeView(rowView)
+        }
+        
+        mBinding.llTagsContainer.addView(rowView)
+    }
 
     private fun updateCount(editText: TextInputEditText, delta: Int, type: String) {
         val current = editText.text?.toString()?.toIntOrNull() ?: 0

@@ -1,0 +1,348 @@
+﻿diff --git a/HEL_(1)/HEL/Excel-Reader/app/src/main/java/com/rameez/hel/fragments/WIPFilterFragment.kt b/HEL_(1)/HEL/Excel-Reader/app/src/main/java/com/rameez/hel/fragments/WIPFilterFragment.kt
+index 64afeef..4725dd8 100644
+--- a/HEL_(1)/HEL/Excel-Reader/app/src/main/java/com/rameez/hel/fragments/WIPFilterFragment.kt
++++ b/HEL_(1)/HEL/Excel-Reader/app/src/main/java/com/rameez/hel/fragments/WIPFilterFragment.kt
+@@ -15,6 +15,7 @@ import androidx.activity.OnBackPressedCallback
+ import androidx.core.widget.addTextChangedListener
+ import androidx.fragment.app.Fragment
+ import androidx.fragment.app.activityViewModels
++import androidx.lifecycle.lifecycleScope
+ import androidx.navigation.fragment.findNavController
+ import androidx.recyclerview.widget.GridLayoutManager
+ import com.rameez.hel.R
+@@ -1116,13 +1117,13 @@ class WIPFilterFragment : Fragment() {
+                                         "null" -> rc == null || rc == 0f
+                                         "!null" -> rc != null && rc != 0f
+                                         "="  -> rc != null && rc == from
+-                                        "!=" -> rc != null && rc != from
++                                        "!=" -> rc == null || rc != from
+                                         ">"  -> rc != null && rc > from
+                                         "<"  -> rc != null && rc < from
+                                         ">=" -> rc != null && rc >= from
+                                         "<=" -> rc != null && rc <= from
+                                         "<>" -> rc != null && to != null && rc in from..to
+-                        "!<>" -> rc != null && to != null && rc !in from..to
++                                        "!<>" -> to != null && (rc == null || rc !in from..to)
+                                         else -> false
+                                     }
+                                 }
+@@ -1155,13 +1156,13 @@ class WIPFilterFragment : Fragment() {
+                                         "null" -> vc == null || vc == 0f
+                                         "!null" -> vc != null && vc != 0f
+                                         "="  -> vc != null && vc == vcFilter
+-                                        "!=" -> vc != null && vc != vcFilter
++                                        "!=" -> vc == null || vc != vcFilter
+                                         ">"  -> vc != null && vc > vcFilter
+                                         "<"  -> vc != null && vc < vcFilter
+                                         ">=" -> vc != null && vc >= vcFilter
+                                         "<=" -> vc != null && vc <= vcFilter
+                                         "<>" -> vc != null && to != null && vc in vcFilter..to
+-                        "!<>" -> vc != null && to != null && vc !in vcFilter..to
++                                        "!<>" -> to != null && (vc == null || vc !in vcFilter..to)
+                                         else -> false
+                                     }
+                                 }
+@@ -1346,7 +1347,7 @@ class WIPFilterFragment : Fragment() {
+ 
+     private fun sortSpinnerSetup() {
+         val sortOptions = listOf(
+-            "", "Last Viewed", "Last Encountered", "Created", "Modified", "Para Created", "Viewed Count", "Encountered Count"
++            "", "Last Viewed", "First Viewed", "Last Encountered", "First Encountered", "Created", "Modified", "Para Created", "Viewed Count", "Encountered Count"
+         )
+         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, sortOptions)
+         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+@@ -1386,7 +1387,9 @@ class WIPFilterFragment : Fragment() {
+         val asc = sharedViewModel.sortAscending
+         return when (sharedViewModel.sortBy) {
+             "Last Viewed" -> if (asc) list.sortedBy { it.displayCountUpdatedAt } else list.sortedByDescending { it.displayCountUpdatedAt }
++            "First Viewed" -> if (asc) list.sortedBy { it.firstViewedAt } else list.sortedByDescending { it.firstViewedAt }
+             "Last Encountered" -> if (asc) list.sortedBy { it.readCountUpdatedAt } else list.sortedByDescending { it.readCountUpdatedAt }
++            "First Encountered" -> if (asc) list.sortedBy { it.firstEncounteredAt } else list.sortedByDescending { it.firstEncounteredAt }
+             "Created" -> if (asc) list.sortedBy { it.createdAt } else list.sortedByDescending { it.createdAt }
+             "Modified" -> if (asc) list.sortedBy { it.modifiedAt } else list.sortedByDescending { it.modifiedAt }
+             "Para Created" -> if (asc) list.sortedBy { it.lastParaCreatedAt } else list.sortedByDescending { it.lastParaCreatedAt }
+@@ -1396,37 +1399,117 @@ class WIPFilterFragment : Fragment() {
+         }
+     }
+ 
+-    private fun applyFiltersToViewModel() {
+-        // Build filtered list and store in shared viewmodel, then navigate back
+-        buildFilteredList { filteredData ->
+-            if (filteredData == null) return@buildFilteredList
+-
+-            sharedViewModel.filteredWipsList = filteredData.toMutableList()
+-            sharedViewModel.isFilterApplied = true
++    private fun readCurrentFilterValues() {
++        // Text filters
++        filteredWIP = if (mBinding.etWIP.text?.isNotBlank() == true) mBinding.etWIP.text.toString().trim() else null
++        filteredMeaning = if (mBinding.etMeaning.text?.isNotBlank() == true) mBinding.etMeaning.text.toString().trim() else null
++        filteredSampleSen = if (mBinding.etSampleSen.text?.isNotBlank() == true) mBinding.etSampleSen.text.toString().trim() else null
++
++        // Re-read ALL operators directly from spinners to avoid stale listener values
++        readOperator = if (mBinding.readSpinner.selectedItemPosition != 0) mBinding.readSpinner.selectedItem?.toString() else null
++        viewedOperator = if (mBinding.viewedSpinner.selectedItemPosition != 0) mBinding.viewedSpinner.selectedItem?.toString() else null
++        createdOperator = if (mBinding.spinnerCreatedOp.selectedItemPosition != 0) mBinding.spinnerCreatedOp.selectedItem?.toString() else null
++        modifiedOperator = if (mBinding.spinnerModifiedOp.selectedItemPosition != 0) mBinding.spinnerModifiedOp.selectedItem?.toString() else null
++        lastViewedOperator = if (mBinding.spinnerLastViewedOp.selectedItemPosition != 0) mBinding.spinnerLastViewedOp.selectedItem?.toString() else null
++        firstEncounteredOperator = if (mBinding.spinnerFirstEncounteredOp.selectedItemPosition != 0) mBinding.spinnerFirstEncounteredOp.selectedItem?.toString() else null
++        lastEncounteredOperator = if (mBinding.spinnerLastEncounteredOp.selectedItemPosition != 0) mBinding.spinnerLastEncounteredOp.selectedItem?.toString() else null
++        firstViewedOperator = if (mBinding.spinnerFirstViewedOp.selectedItemPosition != 0) mBinding.spinnerFirstViewedOp.selectedItem?.toString() else null
++        articleCreatedOperator = if (mBinding.spinnerArticleCreatedOp.selectedItemPosition != 0) mBinding.spinnerArticleCreatedOp.selectedItem?.toString() else null
++
++        // Count filters
++        filteredReadCount = if (!mBinding.etReadCount.text.isNullOrBlank()) mBinding.etReadCount.text.toString().trim().toFloatOrNull() else null
++        filteredViewedCount = if (!mBinding.etViewedCount.text.isNullOrBlank()) mBinding.etViewedCount.text.toString().trim().toFloatOrNull() else null
++
++        if (readOperator == "<>" || readOperator == "!<>") {
++            filteredReadCountTo = if (!mBinding.etReadCountTo.text.isNullOrBlank()) mBinding.etReadCountTo.text.toString().trim().toFloatOrNull() else null
++        } else {
++            filteredReadCountTo = null
++        }
+ 
+-            // Navigate back to WIPListFragment
+-            findNavController().popBackStack(R.id.WIPListFragment, false)
++        if (viewedOperator == "<>" || viewedOperator == "!<>") {
++            filteredViewedCountTo = if (!mBinding.etViewedCountTo.text.isNullOrBlank()) mBinding.etViewedCountTo.text.toString().trim().toFloatOrNull() else null
++        } else {
++            filteredViewedCountTo = null
+         }
++
++        // Timestamp filters
++        filteredCreatedAt = createdAtMillis
++        filteredModifiedAt = modifiedAtMillis
++
++        // Save operators to sharedViewModel
++        sharedViewModel.readOperator = readOperator
++        sharedViewModel.viewedOperator = viewedOperator
++        sharedViewModel.createdOperator = createdOperator
++        sharedViewModel.modifiedOperator = modifiedOperator
++        sharedViewModel.lastViewedAt = filteredLastViewedAt
++        sharedViewModel.lastViewedAtTo = lastViewedAtMillisTo
++        sharedViewModel.lastViewedOperator = lastViewedOperator
++        sharedViewModel.firstEncounteredAt = filteredFirstEncounteredAt
++        sharedViewModel.firstEncounteredAtTo = firstEncounteredAtMillisTo
++        sharedViewModel.firstEncounteredOperator = firstEncounteredOperator
++        sharedViewModel.lastEncounteredAt = filteredLastEncounteredAt
++        sharedViewModel.lastEncounteredAtTo = lastEncounteredAtMillisTo
++        sharedViewModel.lastEncounteredOperator = lastEncounteredOperator
++        sharedViewModel.firstViewedAt = filteredFirstViewedAt
++        sharedViewModel.firstViewedAtTo = firstViewedAtMillisTo
++        sharedViewModel.firstViewedOperator = firstViewedOperator
++        sharedViewModel.createdAt = filteredCreatedAt
++        sharedViewModel.createdAtTo = createdAtMillisTo
++        sharedViewModel.modifiedAt = filteredModifiedAt
++        sharedViewModel.modifiedAtTo = modifiedAtMillisTo
++        sharedViewModel.articleCreatedAt = filteredArticleCreatedAt
++        sharedViewModel.articleCreatedAtTo = articleCreatedAtMillisTo
++        sharedViewModel.articleCreatedOperator = articleCreatedOperator
++
++        // Null out filter values when operator is not set
++        if (readOperator == null) { filteredReadCount = null; filteredReadCountTo = null }
++        if (viewedOperator == null) { filteredViewedCount = null; filteredViewedCountTo = null }
++        if (createdOperator == null) { filteredCreatedAt = null; createdAtMillisTo = null }
++        if (modifiedOperator == null) { filteredModifiedAt = null; modifiedAtMillisTo = null }
++        if (lastViewedOperator == null) { filteredLastViewedAt = null; lastViewedAtMillisTo = null }
++        if (firstViewedOperator == null) { filteredFirstViewedAt = null; firstViewedAtMillisTo = null }
++        if (firstEncounteredOperator == null) { filteredFirstEncounteredAt = null; firstEncounteredAtMillisTo = null }
++        if (lastEncounteredOperator == null) { filteredLastEncounteredAt = null; lastEncounteredAtMillisTo = null }
++        if (articleCreatedOperator == null) { filteredArticleCreatedAt = null; articleCreatedAtMillisTo = null }
+     }
+ 
+-    private fun buildFilteredList(callback: (List<WIPModel>?) -> Unit) {
+-        val autoScrollOn = mBinding.switchAutoScroll.isChecked
+-        val intervalText = mBinding.etScrollInterval.text.toString()
++    private fun applyFiltersToViewModel() {
++        readCurrentFilterValues()
++
++        // Check if any filter is actually set (same guard as flashcard button)
++        val hasAnyFilter = sharedViewModel.selectedCategories.isNotEmpty() ||
++                sharedViewModel.selectedTags.isNotEmpty() ||
++                filteredReadCount != null ||
++                filteredViewedCount != null ||
++                filteredWIP != null ||
++                filteredMeaning != null ||
++                filteredSampleSen != null ||
++                filteredCreatedAt != null ||
++                filteredModifiedAt != null ||
++                filteredLastViewedAt != null ||
++                filteredFirstEncounteredAt != null ||
++                filteredLastEncounteredAt != null ||
++                filteredFirstViewedAt != null ||
++                filteredArticleCreatedAt != null ||
++                readOperator == "null" || readOperator == "!null" ||
++                viewedOperator == "null" || viewedOperator == "!null"
++
++        if (!hasAnyFilter) {
++            Toast.makeText(requireContext(), "Nothing to filter", Toast.LENGTH_SHORT).show()
++            return
++        }
+ 
+-        // Apply same validation as the apply filter button
+-        if (autoScrollOn) {
+-            if (intervalText.isNotBlank()) {
+-                val seconds = intervalText.toIntOrNull()
+-                if (seconds == null || seconds <= 0) {
+-                    Toast.makeText(requireContext(), "Interval must be a positive number", Toast.LENGTH_SHORT).show()
+-                    callback(null)
+-                    return
+-                }
+-            }
++        // Limit validation
++        if (mBinding.etLimit.text.toString().isNotBlank() && mBinding.etLimit.text.toString().toIntOrNull() == 0) {
++            Toast.makeText(requireContext(), "Limit can't be zero", Toast.LENGTH_SHORT).show()
++            return
+         }
+ 
+-        wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { data ->
+-            // Apply all the same filters
++        // Use lifecycleScope with suspend getWIPs2() to avoid LiveData observer issues
++        viewLifecycleOwner.lifecycleScope.launch {
++            val data = wipViewModel.getWIPs2() ?: emptyList()
++
++            // Apply all filters
+             var filteredData = data
+ 
+             if (filteredWIP != null) {
+@@ -1463,7 +1546,7 @@ class WIPFilterFragment : Fragment() {
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && (filteredReadCount != null || readOperator == "null" || readOperator == "!null")) {
++            if (filteredReadCount != null || readOperator == "null" || readOperator == "!null") {
+                 val from = filteredReadCount ?: 0f
+                 val to = filteredReadCountTo
+                 filteredData = filteredData.filter { wipItem ->
+@@ -1472,19 +1555,19 @@ class WIPFilterFragment : Fragment() {
+                         "null" -> rc == null || rc == 0f
+                         "!null" -> rc != null && rc != 0f
+                         "="  -> rc != null && rc == from
+-                        "!=" -> rc != null && rc != from
++                        "!=" -> rc == null || rc != from
+                         ">"  -> rc != null && rc > from
+                         "<"  -> rc != null && rc < from
+                         ">=" -> rc != null && rc >= from
+                         "<=" -> rc != null && rc <= from
+                         "<>" -> rc != null && to != null && rc in from..to
+-                        "!<>" -> rc != null && to != null && rc !in from..to
++                        "!<>" -> to != null && (rc == null || rc !in from..to)
+                         else -> false
+                     }
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && (filteredViewedCount != null || viewedOperator == "null" || viewedOperator == "!null")) {
++            if (filteredViewedCount != null || viewedOperator == "null" || viewedOperator == "!null") {
+                 val vcFilter = filteredViewedCount ?: 0f
+                 val to = filteredViewedCountTo
+                 filteredData = filteredData.filter { wipItem ->
+@@ -1493,70 +1576,84 @@ class WIPFilterFragment : Fragment() {
+                         "null" -> vc == null || vc == 0f
+                         "!null" -> vc != null && vc != 0f
+                         "="  -> vc != null && vc == vcFilter
+-                        "!=" -> vc != null && vc != vcFilter
++                        "!=" -> vc == null || vc != vcFilter
+                         ">"  -> vc != null && vc > vcFilter
+                         "<"  -> vc != null && vc < vcFilter
+                         ">=" -> vc != null && vc >= vcFilter
+                         "<=" -> vc != null && vc <= vcFilter
+                         "<>" -> vc != null && to != null && vc in vcFilter..to
+-                        "!<>" -> vc != null && to != null && vc !in vcFilter..to
++                        "!<>" -> to != null && (vc == null || vc !in vcFilter..to)
+                         else -> false
+                     }
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredLastViewedAt != null) {
++            if (filteredLastViewedAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.displayCountUpdatedAt, operator = lastViewedOperator, from = filteredLastViewedAt!!, to = lastViewedAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredFirstEncounteredAt != null) {
++            if (filteredFirstEncounteredAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.firstEncounteredAt, operator = firstEncounteredOperator, from = filteredFirstEncounteredAt!!, to = firstEncounteredAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredCreatedAt != null) {
++            if (filteredCreatedAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.createdAt, operator = createdOperator, from = filteredCreatedAt!!, to = createdAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredModifiedAt != null) {
++            if (filteredModifiedAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.modifiedAt, operator = modifiedOperator, from = filteredModifiedAt!!, to = modifiedAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredLastEncounteredAt != null) {
++            if (filteredLastEncounteredAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.readCountUpdatedAt, operator = lastEncounteredOperator, from = filteredLastEncounteredAt!!, to = lastEncounteredAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredFirstViewedAt != null) {
++            if (filteredFirstViewedAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.firstViewedAt, operator = firstViewedOperator, from = filteredFirstViewedAt!!, to = firstViewedAtMillisTo)
+                 }
+             }
+ 
+-            if (filteredData.isNotEmpty() && filteredArticleCreatedAt != null) {
++            if (filteredArticleCreatedAt != null) {
+                 filteredData = filteredData.filter { wip ->
+                     matchDateOperator(ts = wip.lastParaCreatedAt, operator = articleCreatedOperator, from = filteredArticleCreatedAt!!, to = articleCreatedAtMillisTo)
+                 }
+             }
+ 
+-            // Sort results (#14)
++            // Sort results
+             filteredData = sortFilteredList(filteredData)
+ 
+-            callback(filteredData)
++            // Apply limit if set
++            val limitText = mBinding.etLimit.text.toString()
++            if (limitText.isNotBlank()) {
++                val limit = limitText.toIntOrNull()
++                if (limit != null && limit > 0) {
++                    filteredData = filteredData.shuffled().take(limit)
++                }
++            }
++
++            sharedViewModel.filteredWipsList = filteredData.toMutableList()
++            sharedViewModel.isFilterApplied = true
+ 
+-            // Remove observer after first result
+-            wipViewModel.getWIPs()?.removeObservers(viewLifecycleOwner)
++            Log.d("ShowList", "Filtered: ${filteredData.size} / ${data.size} items, categories=${sharedViewModel.selectedCategories}, tags=${sharedViewModel.selectedTags}")
++            Toast.makeText(requireContext(), "Filtered: ${filteredData.size} of ${data.size}", Toast.LENGTH_SHORT).show()
++
++            // Navigate back to WIPListFragment
++            findNavController().popBackStack(R.id.WIPListFragment, false)
+         }
+     }
+ 
++
+     private fun updateTimerText() {
+         val h = sharedViewModel.selectedHours ?: 0
+         val m = sharedViewModel.selectedMins ?: 0
+@@ -1813,6 +1910,12 @@ class WIPFilterFragment : Fragment() {
+         if (operator == "null") return ts == null || ts == 0L
+         if (operator == "!null") return ts != null && ts != 0L
+ 
++        // For negation operators, null/0 timestamps should match
++        // (null is "not equal to" any date, null is "not between" any range)
++        if (operator == "!=" || operator == "!<>") {
++            if (ts == null || ts == 0L) return true
++        }
++
+         // exclude empty / never-used timestamps for other operators
+         if (ts == null || ts == 0L) return false
+ 

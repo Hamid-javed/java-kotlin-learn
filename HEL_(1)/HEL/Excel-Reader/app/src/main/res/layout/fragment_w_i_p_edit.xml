@@ -194,6 +194,13 @@
                         android:text="Tags"
                         android:textColor="@color/black" />
 
+                    <LinearLayout
+                        android:id="@+id/llTagsContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp" />
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -206,7 +213,7 @@
                             android:maxLines="1"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Sports"
+                            android:hint="Type tag"
                             android:completionThreshold="1"
                             android:inputType="text"
                             app:layout_constraintEnd_toStartOf="@id/btnAddTag"
@@ -222,33 +229,9 @@
                             app:layout_constraintTop_toTopOf="@id/etTag"
                             app:layout_constraintBottom_toBottomOf="@id/etTag"
                             app:layout_constraintEnd_toEndOf="parent"
-                            android:text="Add">
+                            android:text="Add" />
 
-                        </Button>
-
-                        <ImageView
-                            android:id="@+id/ivDeleteTags"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_marginTop="5dp"
-                            android:src="@drawable/ic_delete"
-                            app:layout_constraintEnd_toEndOf="@id/btnAddTag"
-                            app:layout_constraintTop_toBottomOf="@id/btnAddTag">
-
-                        </ImageView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_extrabold"
-                        android:textSize="16sp"
-                        android:id="@+id/tvTags"
-                        android:textColor="@color/black"
-                        android:layout_marginTop="14dp"
-                        tools:text="Sports, Casuals, Business, Formal">
-
-                    </TextView>
                 </LinearLayout>
 
 

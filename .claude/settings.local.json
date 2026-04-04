@@ -35,7 +35,8 @@
       "Bash(adb push:*)",
       "Bash(adb shell:*)",
       "Bash(adb exec-out:*)",
-      "Bash(find . -name \"*.apk\" -delete)"
+      "Bash(find . -name \"*.apk\" -delete)",
+      "Bash(./gradlew.bat clean:*)"
     ]
   }
 }
