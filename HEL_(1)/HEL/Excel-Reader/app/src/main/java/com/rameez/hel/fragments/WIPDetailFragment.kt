@@ -10,8 +10,10 @@ import android.view.View
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -132,6 +134,19 @@ class WIPDetailFragment : Fragment() {
 
 
 
+        wipViewModel.allTags?.observe(viewLifecycleOwner) { tags ->
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                tags
+            )
+            mBinding.etTag.setAdapter(adapter)
+        }
+
+        mBinding.etTag.setOnItemClickListener { _, _, _, _ ->
+            mBinding.btnAddTag.performClick()
+        }
+
         val viewCount = intent?.getFloat("view_count", 0f)
         if (viewCount != null) {
             if(SharedPref.isAppLaunched(requireContext())) {
@@ -189,12 +204,18 @@ class WIPDetailFragment : Fragment() {
         }
 
         mBinding.tvDeleteWIP.setOnClickListener {
-            wipViewModel.deleteWIPById(id)
-            lifecycleScope.launch {
-//                delay(500)
-                sharedViewModel.isWIPDeleted = true
-                findNavController().navigateUp()
-            }
+            AlertDialog.Builder(requireContext())
+                .setTitle("Delete WPI")
+                .setMessage("Are you sure you want to delete this WPI?")
+                .setPositiveButton("Delete") { _, _ ->
+                    wipViewModel.deleteWIPById(id)
+                    lifecycleScope.launch {
+                        sharedViewModel.isWIPDeleted = true
+                        findNavController().navigateUp()
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         mBinding.btnViewedPlus.setOnClickListener {

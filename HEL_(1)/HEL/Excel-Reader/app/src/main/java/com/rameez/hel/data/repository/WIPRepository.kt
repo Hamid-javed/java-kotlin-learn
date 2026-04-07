@@ -204,18 +204,18 @@ class WIPRepository(private val wipDao: WIPDao) {
 
 
 
-    suspend fun incrementDisplayCount(wipId: Int, inc: Float = 1f) {
+    suspend fun incrementDisplayCount(wipId: Int, inc: Float = 1f, updateTimestamp: Boolean = true) {
         val now = System.currentTimeMillis()
-        // Fetch the latest state from DB
         val currentWip = wipDao.getWIPByIdSync(wipId) ?: return
 
-        // 1. Update the running total and "Last Viewed"
-        // The DAO function now directly updates displayCountUpdatedAt on increment
-        wipDao.incrementDisplayCountSql(wipId, inc, now)
+        if (updateTimestamp) {
+            wipDao.incrementDisplayCountSql(wipId, inc, now)
 
-        // 2. Update "First Viewed" if it has never been set
-        if (currentWip.firstViewedAt == 0L) {
-            wipDao.updateFirstViewedAt(wipId, now)
+            if (currentWip.firstViewedAt == 0L) {
+                wipDao.updateFirstViewedAt(wipId, now)
+            }
+        } else {
+            wipDao.incrementDisplayCountOnly(wipId, inc)
         }
     }
 

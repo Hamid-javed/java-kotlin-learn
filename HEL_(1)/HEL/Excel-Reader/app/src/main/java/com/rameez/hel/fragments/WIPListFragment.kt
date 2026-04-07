@@ -122,6 +122,9 @@ class WIPListFragment : Fragment() {
                     mBinding.btnGeneratePara.visibility = View.GONE
                     mBinding.cbSelectAll.visibility = View.GONE
                     mBinding.tvSelectionCount.visibility = View.GONE
+                } else if (sharedViewModel.isShowingFilteredResults) {
+                    sharedViewModel.isShowingFilteredResults = false
+                    findNavController().navigate(R.id.WIPFilterFragment)
                 } else {
                     requireActivity().finish()
                 }

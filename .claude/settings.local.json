@@ -36,7 +36,8 @@
       "Bash(adb shell:*)",
       "Bash(adb exec-out:*)",
       "Bash(find . -name \"*.apk\" -delete)",
-      "Bash(./gradlew.bat clean:*)"
+      "Bash(./gradlew.bat clean:*)",
+      "Bash(find \"/c/Users/hamid/OneDrive/Desktop/Java Kotlin/AppCode_WithoutGenAi/HEL_\\(1\\)/HEL/Excel-Reader\" -type d -name \"java\" -o -type d -name \"res\")"
     ]
   }
 }

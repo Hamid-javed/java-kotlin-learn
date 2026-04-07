@@ -7,6 +7,7 @@ class SharedViewModel : ViewModel() {
 
     var isMuted: Boolean = false
     var isFilterApplied: Boolean = false
+    var isShowingFilteredResults: Boolean = false
     var filteredWipsList = mutableListOf<WIPModel>()
     var selectedHours: Int? = null
     var selectedMins: Int? = null

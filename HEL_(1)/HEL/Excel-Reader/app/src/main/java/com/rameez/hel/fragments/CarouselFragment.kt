@@ -279,16 +279,13 @@ class CarouselFragment : Fragment() {
         wipViewModel.lastUpdatedWip.observe(viewLifecycleOwner) { updatedWIP ->
             updatedWIP ?: return@observe
 
-            val newList = carouselAdapter.currentList.map {
-                if (it.id == updatedWIP.id) updatedWIP else it
+            val idx = shuffledList.indexOfFirst { it.id == updatedWIP.id }
+            if (idx != -1) {
+                val mutableList = shuffledList.toMutableList()
+                mutableList[idx] = updatedWIP
+                shuffledList = mutableList
+                carouselAdapter.notifyItemChanged(idx)
             }
-
-            shuffledList = newList
-            carouselAdapter.submitList(newList)
-
-            mBinding.tvResultCount.text = "total: ${newList.size}"
-            mBinding.tvResultCount.visibility =
-                if (newList.isEmpty()) View.GONE else View.VISIBLE
         }
 
         lifecycleScope.launch {
@@ -319,16 +316,7 @@ class CarouselFragment : Fragment() {
 
                                 val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
                                 if (!isParaFilterActive) {
-                                    wipViewModel.incrementDisplayCount(id)
-
-                                    val currentViews = item.displayCount ?: 0f
-                                    val updatedItem = item.copy(displayCount = currentViews + 1f)
-
-                                    val newList = shuffledList.map {
-                                        if (it.id == updatedItem.id) updatedItem else it
-                                    }
-                                    shuffledList = newList
-                                    carouselAdapter.submitList(newList)
+                                    wipViewModel.incrementDisplayCount(id, sharedViewModel.updateTimestampsDuringFlashcard)
                                 }
                             }
                         }
@@ -444,16 +432,7 @@ class CarouselFragment : Fragment() {
 
                                 val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
                                 if (!isParaFilterActive) {
-                                    wipViewModel.incrementDisplayCount(id)
-
-                                    val currentViews = item.displayCount ?: 0f
-                                    val updatedItem = item.copy(displayCount = currentViews + 1f)
-
-                                    val newList = shuffledList.map {
-                                        if (it.id == updatedItem.id) updatedItem else it
-                                    }
-                                    shuffledList = newList
-                                    carouselAdapter.submitList(newList)
+                                    wipViewModel.incrementDisplayCount(id, sharedViewModel.updateTimestampsDuringFlashcard)
                                 }
                             }
                         }

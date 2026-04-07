@@ -285,6 +285,9 @@ class WIPFilterFragment : Fragment() {
             updateTimestampsDuringFlashcard = true
             sortBy = null
             sortAscending = false
+            isFilterApplied = false
+            isShowingFilteredResults = false
+            filteredWipsList.clear()
         }
 
 
@@ -1025,7 +1028,16 @@ class WIPFilterFragment : Fragment() {
                         filteredFirstEncounteredAt != null ||
                         filteredLastEncounteredAt != null ||
                         filteredFirstViewedAt != null ||
-                        filteredArticleCreatedAt != null
+                        filteredArticleCreatedAt != null ||
+                        readOperator == "null" || readOperator == "!null" ||
+                        viewedOperator == "null" || viewedOperator == "!null" ||
+                        createdOperator == "null" || createdOperator == "!null" ||
+                        modifiedOperator == "null" || modifiedOperator == "!null" ||
+                        lastViewedOperator == "null" || lastViewedOperator == "!null" ||
+                        firstEncounteredOperator == "null" || firstEncounteredOperator == "!null" ||
+                        lastEncounteredOperator == "null" || lastEncounteredOperator == "!null" ||
+                        firstViewedOperator == "null" || firstViewedOperator == "!null" ||
+                        articleCreatedOperator == "null" || articleCreatedOperator == "!null"
                     ) {
 
                         var filteredData = data
@@ -1058,12 +1070,12 @@ class WIPFilterFragment : Fragment() {
 
                         CoroutineScope(Dispatchers.IO).launch {
 
-                            if (filteredArticleCreatedAt != null) {
+                            if (filteredArticleCreatedAt != null || articleCreatedOperator == "null" || articleCreatedOperator == "!null") {
                                 filteredData = filteredData.filter { wip ->
                                     matchDateOperator(
                                         ts = wip.lastParaCreatedAt,
                                         operator = articleCreatedOperator,
-                                        from = filteredArticleCreatedAt!!,
+                                        from = filteredArticleCreatedAt ?: 0L,
                                         to = articleCreatedAtMillisTo
                                     )
                                 }
@@ -1131,8 +1143,8 @@ class WIPFilterFragment : Fragment() {
 
 
 
-                            if (filteredData.isNotEmpty() && filteredLastViewedAt != null) {
-                                val from = filteredLastViewedAt!!
+                            if (filteredData.isNotEmpty() && (filteredLastViewedAt != null || lastViewedOperator == "null" || lastViewedOperator == "!null")) {
+                                val from = filteredLastViewedAt ?: 0L
                                 val to = lastViewedAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
@@ -1168,8 +1180,8 @@ class WIPFilterFragment : Fragment() {
                                 }
                             }
 
-                            if (filteredData.isNotEmpty() && filteredFirstEncounteredAt != null) {
-                                val from = filteredFirstEncounteredAt!!
+                            if (filteredData.isNotEmpty() && (filteredFirstEncounteredAt != null || firstEncounteredOperator == "null" || firstEncounteredOperator == "!null")) {
+                                val from = filteredFirstEncounteredAt ?: 0L
                                 val to = firstEncounteredAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
@@ -1183,8 +1195,8 @@ class WIPFilterFragment : Fragment() {
                             }
 
 
-                            if (filteredData.isNotEmpty() && filteredCreatedAt != null) {
-                                val from = filteredCreatedAt!!
+                            if (filteredData.isNotEmpty() && (filteredCreatedAt != null || createdOperator == "null" || createdOperator == "!null")) {
+                                val from = filteredCreatedAt ?: 0L
                                 val to = createdAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
@@ -1198,8 +1210,8 @@ class WIPFilterFragment : Fragment() {
                             }
 
 
-                            if (filteredData.isNotEmpty() && filteredModifiedAt != null) {
-                                val from = filteredModifiedAt!!
+                            if (filteredData.isNotEmpty() && (filteredModifiedAt != null || modifiedOperator == "null" || modifiedOperator == "!null")) {
+                                val from = filteredModifiedAt ?: 0L
                                 val to = modifiedAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
@@ -1212,13 +1224,13 @@ class WIPFilterFragment : Fragment() {
                                 }
                             }
 
-                            if (filteredData.isNotEmpty() && filteredLastEncounteredAt != null) {
-                                val from = filteredLastEncounteredAt!!
+                            if (filteredData.isNotEmpty() && (filteredLastEncounteredAt != null || lastEncounteredOperator == "null" || lastEncounteredOperator == "!null")) {
+                                val from = filteredLastEncounteredAt ?: 0L
                                 val to = lastEncounteredAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
                                     matchDateOperator(
-                                        ts = wip.readCountUpdatedAt, // ✅ last encountered
+                                        ts = wip.readCountUpdatedAt,
                                         operator = lastEncounteredOperator,
                                         from = from,
                                         to = to
@@ -1226,8 +1238,8 @@ class WIPFilterFragment : Fragment() {
                                 }
                             }
 
-                            if (filteredData.isNotEmpty() && filteredFirstViewedAt != null) {
-                                val from = filteredFirstViewedAt!!
+                            if (filteredData.isNotEmpty() && (filteredFirstViewedAt != null || firstViewedOperator == "null" || firstViewedOperator == "!null")) {
+                                val from = filteredFirstViewedAt ?: 0L
                                 val to = firstViewedAtMillisTo
 
                                 filteredData = filteredData.filter { wip ->
@@ -1286,7 +1298,16 @@ class WIPFilterFragment : Fragment() {
                             filteredFirstEncounteredAt == null &&
                             filteredLastEncounteredAt == null &&
                             filteredFirstViewedAt == null &&
-                            filteredArticleCreatedAt == null) {
+                            filteredArticleCreatedAt == null &&
+                            readOperator != "null" && readOperator != "!null" &&
+                            viewedOperator != "null" && viewedOperator != "!null" &&
+                            createdOperator != "null" && createdOperator != "!null" &&
+                            modifiedOperator != "null" && modifiedOperator != "!null" &&
+                            lastViewedOperator != "null" && lastViewedOperator != "!null" &&
+                            firstEncounteredOperator != "null" && firstEncounteredOperator != "!null" &&
+                            lastEncounteredOperator != "null" && lastEncounteredOperator != "!null" &&
+                            firstViewedOperator != "null" && firstViewedOperator != "!null" &&
+                            articleCreatedOperator != "null" && articleCreatedOperator != "!null") {
                             Toast.makeText(requireContext(), "Nothing to filter", Toast.LENGTH_SHORT).show()
                         }
                         else {
@@ -1492,7 +1513,14 @@ class WIPFilterFragment : Fragment() {
                 filteredFirstViewedAt != null ||
                 filteredArticleCreatedAt != null ||
                 readOperator == "null" || readOperator == "!null" ||
-                viewedOperator == "null" || viewedOperator == "!null"
+                viewedOperator == "null" || viewedOperator == "!null" ||
+                createdOperator == "null" || createdOperator == "!null" ||
+                modifiedOperator == "null" || modifiedOperator == "!null" ||
+                lastViewedOperator == "null" || lastViewedOperator == "!null" ||
+                firstEncounteredOperator == "null" || firstEncounteredOperator == "!null" ||
+                lastEncounteredOperator == "null" || lastEncounteredOperator == "!null" ||
+                firstViewedOperator == "null" || firstViewedOperator == "!null" ||
+                articleCreatedOperator == "null" || articleCreatedOperator == "!null"
 
         if (!hasAnyFilter) {
             Toast.makeText(requireContext(), "Nothing to filter", Toast.LENGTH_SHORT).show()
@@ -1588,45 +1616,45 @@ class WIPFilterFragment : Fragment() {
                 }
             }
 
-            if (filteredLastViewedAt != null) {
+            if (filteredLastViewedAt != null || lastViewedOperator == "null" || lastViewedOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.displayCountUpdatedAt, operator = lastViewedOperator, from = filteredLastViewedAt!!, to = lastViewedAtMillisTo)
+                    matchDateOperator(ts = wip.displayCountUpdatedAt, operator = lastViewedOperator, from = filteredLastViewedAt ?: 0L, to = lastViewedAtMillisTo)
                 }
             }
 
-            if (filteredFirstEncounteredAt != null) {
+            if (filteredFirstEncounteredAt != null || firstEncounteredOperator == "null" || firstEncounteredOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.firstEncounteredAt, operator = firstEncounteredOperator, from = filteredFirstEncounteredAt!!, to = firstEncounteredAtMillisTo)
+                    matchDateOperator(ts = wip.firstEncounteredAt, operator = firstEncounteredOperator, from = filteredFirstEncounteredAt ?: 0L, to = firstEncounteredAtMillisTo)
                 }
             }
 
-            if (filteredCreatedAt != null) {
+            if (filteredCreatedAt != null || createdOperator == "null" || createdOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.createdAt, operator = createdOperator, from = filteredCreatedAt!!, to = createdAtMillisTo)
+                    matchDateOperator(ts = wip.createdAt, operator = createdOperator, from = filteredCreatedAt ?: 0L, to = createdAtMillisTo)
                 }
             }
 
-            if (filteredModifiedAt != null) {
+            if (filteredModifiedAt != null || modifiedOperator == "null" || modifiedOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.modifiedAt, operator = modifiedOperator, from = filteredModifiedAt!!, to = modifiedAtMillisTo)
+                    matchDateOperator(ts = wip.modifiedAt, operator = modifiedOperator, from = filteredModifiedAt ?: 0L, to = modifiedAtMillisTo)
                 }
             }
 
-            if (filteredLastEncounteredAt != null) {
+            if (filteredLastEncounteredAt != null || lastEncounteredOperator == "null" || lastEncounteredOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.readCountUpdatedAt, operator = lastEncounteredOperator, from = filteredLastEncounteredAt!!, to = lastEncounteredAtMillisTo)
+                    matchDateOperator(ts = wip.readCountUpdatedAt, operator = lastEncounteredOperator, from = filteredLastEncounteredAt ?: 0L, to = lastEncounteredAtMillisTo)
                 }
             }
 
-            if (filteredFirstViewedAt != null) {
+            if (filteredFirstViewedAt != null || firstViewedOperator == "null" || firstViewedOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.firstViewedAt, operator = firstViewedOperator, from = filteredFirstViewedAt!!, to = firstViewedAtMillisTo)
+                    matchDateOperator(ts = wip.firstViewedAt, operator = firstViewedOperator, from = filteredFirstViewedAt ?: 0L, to = firstViewedAtMillisTo)
                 }
             }
 
-            if (filteredArticleCreatedAt != null) {
+            if (filteredArticleCreatedAt != null || articleCreatedOperator == "null" || articleCreatedOperator == "!null") {
                 filteredData = filteredData.filter { wip ->
-                    matchDateOperator(ts = wip.lastParaCreatedAt, operator = articleCreatedOperator, from = filteredArticleCreatedAt!!, to = articleCreatedAtMillisTo)
+                    matchDateOperator(ts = wip.lastParaCreatedAt, operator = articleCreatedOperator, from = filteredArticleCreatedAt ?: 0L, to = articleCreatedAtMillisTo)
                 }
             }
 
@@ -1644,6 +1672,7 @@ class WIPFilterFragment : Fragment() {
 
             sharedViewModel.filteredWipsList = filteredData.toMutableList()
             sharedViewModel.isFilterApplied = true
+            sharedViewModel.isShowingFilteredResults = true
 
             Log.d("ShowList", "Filtered: ${filteredData.size} / ${data.size} items, categories=${sharedViewModel.selectedCategories}, tags=${sharedViewModel.selectedTags}")
             Toast.makeText(requireContext(), "Filtered: ${filteredData.size} of ${data.size}", Toast.LENGTH_SHORT).show()
