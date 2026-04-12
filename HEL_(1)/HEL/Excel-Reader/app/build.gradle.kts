@@ -30,8 +30,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("second")
+        }
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("second")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -219,6 +219,17 @@ class WIPRepository(private val wipDao: WIPDao) {
         }
     }
 
+    suspend fun updateLastViewedTimestamp(wipId: Int) {
+        val now = System.currentTimeMillis()
+        val currentWip = wipDao.getWIPByIdSync(wipId) ?: return
+
+        wipDao.updateDisplayCountTimestampOnly(wipId, now)
+
+        if (currentWip.firstViewedAt == 0L) {
+            wipDao.updateFirstViewedAt(wipId, now)
+        }
+    }
+
     suspend fun insertArticle(article: ArticleModel) {
         wipDao.insertArticle(article)
     }

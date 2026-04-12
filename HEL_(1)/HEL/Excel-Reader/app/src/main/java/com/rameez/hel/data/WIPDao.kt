@@ -93,6 +93,14 @@ interface WIPDao {
     """)
     suspend fun incrementDisplayCountOnly(id: Int, inc: Float)
 
+    // Update displayCountUpdatedAt (last viewed timestamp) WITHOUT incrementing count
+    @Query("""
+        UPDATE WIP_LIST SET
+            displayCountUpdatedAt = :ts
+        WHERE id = :id
+    """)
+    suspend fun updateDisplayCountTimestampOnly(id: Int, ts: Long)
+
     @Query("SELECT * FROM WIP_LIST WHERE customTag LIKE '%' || :tag || '%'")
     fun getWIPsWithCustomTag(tag: String): LiveData<List<WIPModel>>
 

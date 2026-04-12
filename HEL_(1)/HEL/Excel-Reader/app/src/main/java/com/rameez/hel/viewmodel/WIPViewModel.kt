@@ -83,6 +83,10 @@ class WIPViewModel : ViewModel() {
         wipRepository?.incrementDisplayCount(id, updateTimestamp = updateTimestamp)
     }
 
+    fun updateLastViewedTimestamp(id: Int) = viewModelScope.launch {
+        wipRepository?.updateLastViewedTimestamp(id)
+    }
+
     fun incrementReadCount(id: Int, inc: Float = 1.0f) = viewModelScope.launch {
         wipRepository?.updateReadCount(id, inc)
     }

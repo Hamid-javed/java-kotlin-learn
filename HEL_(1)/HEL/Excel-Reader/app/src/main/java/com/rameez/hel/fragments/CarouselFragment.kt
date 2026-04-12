@@ -307,17 +307,14 @@ class CarouselFragment : Fragment() {
                     previousPosition = posToScroll
                     updateCardPosition(posToScroll)
 
-                    // Count initial card if enabled
-                    if (sharedViewModel.updateViewCountDuringFlashcard) {
-                        shuffledList.getOrNull(posToScroll)?.let { item ->
-                            val id = item.id
-                            if (id != null && !sessionCountedIds.contains(id)) {
+                    // Count / timestamp update for the initial card (independent flags)
+                    shuffledList.getOrNull(posToScroll)?.let { item ->
+                        val id = item.id
+                        if (id != null && !sessionCountedIds.contains(id)) {
+                            val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
+                            if (!isParaFilterActive) {
+                                applyFlashcardTracking(id)
                                 sessionCountedIds.add(id)
-
-                                val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
-                                if (!isParaFilterActive) {
-                                    wipViewModel.incrementDisplayCount(id, sharedViewModel.updateTimestampsDuringFlashcard)
-                                }
                             }
                         }
                     }
@@ -425,15 +422,12 @@ class CarouselFragment : Fragment() {
                             speakWIP(shuffledList[snappedPos])
                         }
 
-                        // #13: Only update counts if checkbox is enabled
-                        if (sharedViewModel.updateViewCountDuringFlashcard) {
-                            if (id != null && !sessionCountedIds.contains(id)) {
+                        // #13: Handle view-count and last-viewed-timestamp flags independently
+                        if (id != null && !sessionCountedIds.contains(id)) {
+                            val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
+                            if (!isParaFilterActive) {
+                                applyFlashcardTracking(id)
                                 sessionCountedIds.add(id)
-
-                                val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
-                                if (!isParaFilterActive) {
-                                    wipViewModel.incrementDisplayCount(id, sharedViewModel.updateTimestampsDuringFlashcard)
-                                }
                             }
                         }
 
@@ -477,6 +471,17 @@ class CarouselFragment : Fragment() {
                     speakWIP(shuffledList[pos])
                 }
             }
+        }
+    }
+
+    // Apply view-count and last-viewed-timestamp flags independently
+    private fun applyFlashcardTracking(id: Int) {
+        val updateCount = sharedViewModel.updateViewCountDuringFlashcard
+        val updateTs = sharedViewModel.updateTimestampsDuringFlashcard
+
+        when {
+            updateCount -> wipViewModel.incrementDisplayCount(id, updateTs)
+            updateTs -> wipViewModel.updateLastViewedTimestamp(id)
         }
     }
 
