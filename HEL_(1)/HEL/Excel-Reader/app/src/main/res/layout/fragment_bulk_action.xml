@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvBulkEditHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Bulk Edit"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins_semibold" />
+
+        <ImageView
+            android:id="@+id/ivClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="Close"
+            android:padding="4dp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Counts Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Counts"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/poppins_medium" />
+
+            <CheckBox
+                android:id="@+id/cbResetEncountered"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Encountered Count"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetViewed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Viewed Count"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <!-- Tags Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tags"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/poppins_medium" />
+
+            <CheckBox
+                android:id="@+id/cbRemoveAllTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Remove All Tags"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="4dp">
+
+                <CheckBox
+                    android:id="@+id/cbAddTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Tag:"
+                    android:paddingStart="8dp"
+                    android:fontFamily="@font/poppins" />
+
+                <EditText
+                    android:id="@+id/etAddTag"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:hint="Enter tag"
+                    android:inputType="text"
+                    android:enabled="false"
+                    android:maxLines="1"
+                    android:textSize="14sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:background="@android:drawable/edit_text"
+                    android:fontFamily="@font/poppins" />
+            </LinearLayout>
+
+            <!-- Timestamps Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Timestamps"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/poppins_medium" />
+
+            <CheckBox
+                android:id="@+id/cbResetCreatedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Created At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetModifiedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Modified At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetFirstViewedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset First Viewed At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetFirstEncounteredAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset First Encountered At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetLastViewedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Last Viewed At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetLastEncounteredAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Last Encountered At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+            <CheckBox
+                android:id="@+id/cbResetLastParaCreatedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reset Last Article Created At"
+                android:paddingStart="8dp"
+                android:fontFamily="@font/poppins" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Apply Button -->
+    <Button
+        android:id="@+id/btnApplyBulk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Apply Changes (0)"
+        android:enabled="false"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/poppins_semibold" />
+
+</LinearLayout>
