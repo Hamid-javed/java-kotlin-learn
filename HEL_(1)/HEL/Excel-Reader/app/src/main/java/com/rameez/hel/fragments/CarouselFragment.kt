@@ -197,6 +197,26 @@ class CarouselFragment : Fragment() {
                 carouselAdapter.selectAll(cbSelectAll.isChecked)
             }
 
+            btnBulkEdit.setOnClickListener {
+                val selectedIds = carouselAdapter.selectedIds.toList()
+                if (selectedIds.isEmpty()) {
+                    Toast.makeText(requireContext(), "No WPIs selected", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val bulkSheet = BulkActionBottomSheet.newInstance(selectedIds)
+                bulkSheet.onBulkActionApplied = {
+                    carouselAdapter.clearSelection()
+                    mBinding.cbSelectAll.isChecked = false
+                    wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { allWips ->
+                        val filteredIds = shuffledList.mapNotNull { it.id }.toSet()
+                        val updatedList = allWips.filter { it.id in filteredIds }
+                        shuffledList = updatedList
+                        carouselAdapter.submitList(updatedList.toList())
+                    }
+                }
+                bulkSheet.show(childFragmentManager, "BulkActionBS")
+            }
+
             btnGeneratePara.setOnClickListener {
                 val selectedIds = carouselAdapter.selectedIds.toList()
                 val selectedWords = shuffledList.filter { it.id in selectedIds }.mapNotNull { it.wip }
@@ -269,6 +289,7 @@ class CarouselFragment : Fragment() {
             mBinding.tvSelectionCount.text = "$selectedCount/$totalCount selected"
             mBinding.cbSelectAll.isChecked = selectedCount == totalCount && totalCount > 0
             mBinding.btnGeneratePara.visibility = if (selectedCount >= 2) View.VISIBLE else View.GONE
+            mBinding.btnBulkEdit.visibility = if (selectedCount >= 1) View.VISIBLE else View.GONE
         }
 
         val idsList = arrayListOf<Int>()
