@@ -235,6 +235,8 @@
         android:text="Apply Changes (0)"
         android:enabled="false"
         android:layout_marginTop="8dp"
+        android:backgroundTint="#333333"
+        android:textColor="@android:color/white"
         android:fontFamily="@font/poppins_extrabold" />
 
 </LinearLayout>
