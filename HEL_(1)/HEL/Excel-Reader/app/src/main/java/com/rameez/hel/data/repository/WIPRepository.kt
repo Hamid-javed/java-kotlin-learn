@@ -250,7 +250,6 @@ class WIPRepository(private val wipDao: WIPDao) {
         wipDao.resetParaCreatedAt(id)
     }
 
-    @androidx.room.Transaction
     suspend fun executeBulkActions(
         ids: List<Int>,
         resetEncountered: Boolean,
@@ -265,36 +264,12 @@ class WIPRepository(private val wipDao: WIPDao) {
         resetLastEncounteredAt: Boolean,
         resetLastParaCreatedAt: Boolean
     ) {
-        if (ids.isEmpty()) return
-
-        // Counts
-        if (resetEncountered) wipDao.bulkResetEncounteredCount(ids)
-        if (resetViewed) wipDao.bulkResetViewedCount(ids)
-
-        // Tags
-        if (removeAllTags) wipDao.bulkRemoveAllTags(ids)
-
-        if (!addTag.isNullOrBlank()) {
-            val wips = wipDao.getWIPsByIds(ids)
-            for (wip in wips) {
-                val currentTags = wip.customTag.toMutableList()
-                val trimmedTag = addTag.trim()
-                if (!currentTags.contains(trimmedTag)) {
-                    currentTags.add(trimmedTag)
-                    val tagsString = currentTags.joinToString(",")
-                    wip.id?.let { wipDao.updateTagsById(it, tagsString) }
-                }
-            }
-        }
-
-        // Timestamps
-        if (resetCreatedAt) wipDao.bulkResetCreatedAt(ids)
-        if (resetModifiedAt) wipDao.bulkResetModifiedAt(ids)
-        if (resetFirstViewedAt) wipDao.bulkResetFirstViewedAt(ids)
-        if (resetFirstEncounteredAt) wipDao.bulkResetFirstEncounteredAt(ids)
-        if (resetLastViewedAt) wipDao.bulkResetLastViewedAt(ids)
-        if (resetLastEncounteredAt) wipDao.bulkResetLastEncounteredAt(ids)
-        if (resetLastParaCreatedAt) wipDao.bulkResetLastParaCreatedAt(ids)
+        wipDao.executeBulkActions(
+            ids, resetEncountered, resetViewed, removeAllTags, addTag,
+            resetCreatedAt, resetModifiedAt, resetFirstViewedAt,
+            resetFirstEncounteredAt, resetLastViewedAt, resetLastEncounteredAt,
+            resetLastParaCreatedAt
+        )
     }
 
 }

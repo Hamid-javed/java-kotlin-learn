@@ -4,31 +4,32 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import com.rameez.hel.data.model.WIPModel
 import com.rameez.hel.data.model.ArticleModel
 
 
 @Dao
-interface WIPDao {
+abstract class WIPDao {
 
     @Insert
-    suspend fun insertWIP(wipItem: WIPModel)
+    abstract suspend fun insertWIP(wipItem: WIPModel)
 
     @Query("SELECT * FROM WIP_LIST")
-    fun getWIPs(): LiveData<List<WIPModel>>
+    abstract fun getWIPs(): LiveData<List<WIPModel>>
 
     @Query("SELECT * FROM WIP_LIST")
-    suspend fun getWIPs2(): List<WIPModel>
+    abstract suspend fun getWIPs2(): List<WIPModel>
 
     @Query("DELETE FROM WIP_LIST")
-    suspend fun dropTable()
+    abstract suspend fun dropTable()
 
     @Query("SELECT * FROM WIP_LIST WHERE id= :id")
-    fun getWIPById(id: Int): LiveData<WIPModel>
+    abstract fun getWIPById(id: Int): LiveData<WIPModel>
 
     // Synchronous suspend getter — used by repository to compare previous values
     @Query("SELECT * FROM WIP_LIST WHERE id = :id LIMIT 1")
-    suspend fun getWIPByIdSync(id: Int): WIPModel?
+    abstract suspend fun getWIPByIdSync(id: Int): WIPModel?
 
     // Update full WIP content plus modifiedAt and readCount, viewedCount values.
     // Timestamps for read/view counts and first viewed/encountered are handled separately.
@@ -45,7 +46,7 @@ interface WIPDao {
         lastParaCreatedAt = :lastParaCreatedAt
     WHERE id = :id
 """)
-    suspend fun updateWIP(
+    abstract suspend fun updateWIP(
         id: Int,
         category: String,
         wip: String,
@@ -65,7 +66,7 @@ interface WIPDao {
             readCountUpdatedAt = :ts
         WHERE id = :id
     """)
-    suspend fun updateReadCountWithTs(id: Int, readCount: Float, ts: Long)
+    abstract suspend fun updateReadCountWithTs(id: Int, readCount: Float, ts: Long)
 
     // Update only displayCount with timestamp (set exact value)
     @Query("""
@@ -74,7 +75,7 @@ interface WIPDao {
             displayCountUpdatedAt = :ts
         WHERE id = :id
     """)
-    suspend fun updateViewedCountWithTs(id: Int, viewCount: Float, ts: Long)
+    abstract suspend fun updateViewedCountWithTs(id: Int, viewCount: Float, ts: Long)
 
     // Atomic increment of displayCount (safer for concurrent increments)
     @Query("""
@@ -83,7 +84,7 @@ interface WIPDao {
             displayCountUpdatedAt = :ts
         WHERE id = :id
     """)
-    suspend fun incrementDisplayCountSql(id: Int, inc: Float, ts: Long)
+    abstract suspend fun incrementDisplayCountSql(id: Int, inc: Float, ts: Long)
 
     // Increment displayCount WITHOUT updating timestamp
     @Query("""
@@ -91,7 +92,7 @@ interface WIPDao {
             displayCount = COALESCE(displayCount, 0) + :inc
         WHERE id = :id
     """)
-    suspend fun incrementDisplayCountOnly(id: Int, inc: Float)
+    abstract suspend fun incrementDisplayCountOnly(id: Int, inc: Float)
 
     // Update displayCountUpdatedAt (last viewed timestamp) WITHOUT incrementing count
     @Query("""
@@ -99,16 +100,16 @@ interface WIPDao {
             displayCountUpdatedAt = :ts
         WHERE id = :id
     """)
-    suspend fun updateDisplayCountTimestampOnly(id: Int, ts: Long)
+    abstract suspend fun updateDisplayCountTimestampOnly(id: Int, ts: Long)
 
     @Query("SELECT * FROM WIP_LIST WHERE customTag LIKE '%' || :tag || '%'")
-    fun getWIPsWithCustomTag(tag: String): LiveData<List<WIPModel>>
+    abstract fun getWIPsWithCustomTag(tag: String): LiveData<List<WIPModel>>
 
     @Query("DELETE FROM WIP_LIST WHERE id = :id")
-    suspend fun deleteWIPbyId(id: Int)
+    abstract suspend fun deleteWIPbyId(id: Int)
 
     @Query("DELETE FROM WIP_LIST WHERE category  IN (:categories)")
-    suspend fun deleteWholeCategory(categories: List<String?>)
+    abstract suspend fun deleteWholeCategory(categories: List<String?>)
 
 
     @Query("""
@@ -117,7 +118,7 @@ UPDATE WIP_LIST SET
     readCountUpdatedAt = 0
 WHERE id = :id
 """)
-    suspend fun resetEncountered(id: Int)
+    abstract suspend fun resetEncountered(id: Int)
 
 
     @Query("""
@@ -126,7 +127,7 @@ UPDATE WIP_LIST SET
     displayCountUpdatedAt = 0
 WHERE id = :id
 """)
-    suspend fun resetViewed(id: Int)
+    abstract suspend fun resetViewed(id: Int)
 
 
     @Query("""
@@ -135,7 +136,7 @@ UPDATE WIP_LIST SET
     readCountUpdatedAt = 0
 WHERE LOWER(category) IN (:categories)
 """)
-    suspend fun resetEncounteredForCategories(categories: List<String>)
+    abstract suspend fun resetEncounteredForCategories(categories: List<String>)
 
 
 
@@ -145,7 +146,7 @@ UPDATE WIP_LIST SET
     displayCountUpdatedAt = 0
 WHERE LOWER(category) IN (:categories)
 """)
-    suspend fun resetViewedForCategories(categories: List<String>)
+    abstract suspend fun resetViewedForCategories(categories: List<String>)
 
 
 
@@ -155,69 +156,112 @@ WHERE LOWER(category) IN (:categories)
         customTag = :tags
     WHERE id = :id
 """)
-    suspend fun updateTagsOnly(id: Int?, tags: List<String>)
+    abstract suspend fun updateTagsOnly(id: Int?, tags: List<String>)
 
     @Query("UPDATE WIP_LIST SET firstViewedAt = :ts WHERE id = :id")
-    suspend fun updateFirstViewedAt(id: Int, ts: Long)
+    abstract suspend fun updateFirstViewedAt(id: Int, ts: Long)
 
     @Query("UPDATE WIP_LIST SET firstEncounteredAt = :ts WHERE id = :id")
-    suspend fun updateFirstEncounteredAt(id: Int, ts: Long)
+    abstract suspend fun updateFirstEncounteredAt(id: Int, ts: Long)
 
     @Query("SELECT * FROM WIP_LIST WHERE id = :id LIMIT 1")
-    fun getWIPByIdLive(id: Int): LiveData<WIPModel>
+    abstract fun getWIPByIdLive(id: Int): LiveData<WIPModel>
 
     @Query("UPDATE WIP_LIST SET lastParaCreatedAt = :ts WHERE id = :id")
-    suspend fun updateLastParaCreatedAt(id: Int, ts: Long)
+    abstract suspend fun updateLastParaCreatedAt(id: Int, ts: Long)
 
     @Query("UPDATE WIP_LIST SET lastParaCreatedAt = 0 WHERE id = :id")
-    suspend fun resetParaCreatedAt(id: Int)
+    abstract suspend fun resetParaCreatedAt(id: Int)
 
     // Article methods
     @Insert
-    suspend fun insertArticle(article: ArticleModel)
+    abstract suspend fun insertArticle(article: ArticleModel)
 
     @Query("SELECT * FROM GENERATED_ARTICLES ORDER BY createdAt DESC LIMIT 1")
-    fun getLatestArticle(): LiveData<ArticleModel?>
+    abstract fun getLatestArticle(): LiveData<ArticleModel?>
 
     @Query("SELECT * FROM GENERATED_ARTICLES")
-    suspend fun getAllArticles(): List<ArticleModel>
+    abstract suspend fun getAllArticles(): List<ArticleModel>
 
     // === BULK ACTIONS ===
 
     @Query("SELECT * FROM WIP_LIST WHERE id IN (:ids)")
-    suspend fun getWIPsByIds(ids: List<Int>): List<WIPModel>
+    abstract suspend fun getWIPsByIds(ids: List<Int>): List<WIPModel>
 
-    @Query("UPDATE WIP_LIST SET readCount = 0, readCountUpdatedAt = 0, firstEncounteredAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetEncounteredCount(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET readCount = 0, readCountUpdatedAt = 0 WHERE id IN (:ids)")
+    abstract suspend fun bulkResetEncounteredCount(ids: List<Int>)
 
-    @Query("UPDATE WIP_LIST SET displayCount = 0, displayCountUpdatedAt = 0, firstViewedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetViewedCount(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET displayCount = 0, displayCountUpdatedAt = 0 WHERE id IN (:ids)")
+    abstract suspend fun bulkResetViewedCount(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET customTag = '' WHERE id IN (:ids)")
-    suspend fun bulkRemoveAllTags(ids: List<Int>)
+    abstract suspend fun bulkRemoveAllTags(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET createdAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetCreatedAt(ids: List<Int>)
+    abstract suspend fun bulkResetCreatedAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET modifiedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetModifiedAt(ids: List<Int>)
+    abstract suspend fun bulkResetModifiedAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET firstViewedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetFirstViewedAt(ids: List<Int>)
+    abstract suspend fun bulkResetFirstViewedAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET firstEncounteredAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetFirstEncounteredAt(ids: List<Int>)
+    abstract suspend fun bulkResetFirstEncounteredAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET displayCountUpdatedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetLastViewedAt(ids: List<Int>)
+    abstract suspend fun bulkResetLastViewedAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET readCountUpdatedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetLastEncounteredAt(ids: List<Int>)
+    abstract suspend fun bulkResetLastEncounteredAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET lastParaCreatedAt = 0 WHERE id IN (:ids)")
-    suspend fun bulkResetLastParaCreatedAt(ids: List<Int>)
+    abstract suspend fun bulkResetLastParaCreatedAt(ids: List<Int>)
 
     @Query("UPDATE WIP_LIST SET customTag = :tags WHERE id = :id")
-    suspend fun updateTagsById(id: Int, tags: String)
+    abstract suspend fun updateTagsById(id: Int, tags: List<String>)
+
+    @Transaction
+    open suspend fun executeBulkActions(
+        ids: List<Int>,
+        resetEncountered: Boolean,
+        resetViewed: Boolean,
+        removeAllTags: Boolean,
+        addTag: String?,
+        resetCreatedAt: Boolean,
+        resetModifiedAt: Boolean,
+        resetFirstViewedAt: Boolean,
+        resetFirstEncounteredAt: Boolean,
+        resetLastViewedAt: Boolean,
+        resetLastEncounteredAt: Boolean,
+        resetLastParaCreatedAt: Boolean
+    ) {
+        if (ids.isEmpty()) return
+
+        if (resetEncountered) bulkResetEncounteredCount(ids)
+        if (resetViewed) bulkResetViewedCount(ids)
+
+        if (removeAllTags) bulkRemoveAllTags(ids)
+
+        if (!addTag.isNullOrBlank()) {
+            val wips = getWIPsByIds(ids)
+            val trimmedTag = addTag.trim()
+            for (wip in wips) {
+                val currentTags = wip.customTag.toMutableList()
+                if (!currentTags.contains(trimmedTag)) {
+                    currentTags.add(trimmedTag)
+                    wip.id?.let { updateTagsById(it, currentTags) }
+                }
+            }
+        }
+
+        if (resetCreatedAt) bulkResetCreatedAt(ids)
+        if (resetModifiedAt) bulkResetModifiedAt(ids)
+        if (resetFirstViewedAt) bulkResetFirstViewedAt(ids)
+        if (resetFirstEncounteredAt) bulkResetFirstEncounteredAt(ids)
+        if (resetLastViewedAt) bulkResetLastViewedAt(ids)
+        if (resetLastEncounteredAt) bulkResetLastEncounteredAt(ids)
+        if (resetLastParaCreatedAt) bulkResetLastParaCreatedAt(ids)
+    }
 
 }

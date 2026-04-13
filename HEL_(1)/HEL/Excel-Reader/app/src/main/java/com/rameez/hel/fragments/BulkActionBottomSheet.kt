@@ -46,8 +46,24 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
 
         setupCheckboxes()
         setupApplyButton()
+        observeBulkActionComplete()
 
         binding.ivClose.setOnClickListener { dismiss() }
+    }
+
+    private fun observeBulkActionComplete() {
+        wipViewModel.bulkActionComplete.observe(viewLifecycleOwner) { complete ->
+            if (complete) {
+                wipViewModel.resetBulkActionComplete()
+                Toast.makeText(
+                    requireContext(),
+                    "Bulk changes applied to ${selectedIds.size} WPIs",
+                    Toast.LENGTH_SHORT
+                ).show()
+                onBulkActionApplied?.invoke()
+                dismiss()
+            }
+        }
     }
 
     private fun setupCheckboxes() {
@@ -152,19 +168,6 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
             resetLastEncounteredAt = binding.cbResetLastEncounteredAt.isChecked,
             resetLastParaCreatedAt = binding.cbResetLastParaCreatedAt.isChecked
         )
-
-        wipViewModel.bulkActionComplete.observe(viewLifecycleOwner) { complete ->
-            if (complete) {
-                wipViewModel.resetBulkActionComplete()
-                Toast.makeText(
-                    requireContext(),
-                    "Bulk changes applied to ${selectedIds.size} WPIs",
-                    Toast.LENGTH_SHORT
-                ).show()
-                onBulkActionApplied?.invoke()
-                dismiss()
-            }
-        }
     }
 
     override fun onDestroyView() {

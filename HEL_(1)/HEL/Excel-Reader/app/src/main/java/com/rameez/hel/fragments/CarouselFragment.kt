@@ -207,7 +207,8 @@ class CarouselFragment : Fragment() {
                 bulkSheet.onBulkActionApplied = {
                     carouselAdapter.clearSelection()
                     mBinding.cbSelectAll.isChecked = false
-                    wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { allWips ->
+                    lifecycleScope.launch {
+                        val allWips = wipViewModel.getWIPs2() ?: emptyList()
                         val filteredIds = shuffledList.mapNotNull { it.id }.toSet()
                         val updatedList = allWips.filter { it.id in filteredIds }
                         shuffledList = updatedList

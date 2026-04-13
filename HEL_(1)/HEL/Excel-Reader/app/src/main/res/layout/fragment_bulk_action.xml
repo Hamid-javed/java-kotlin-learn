@@ -21,7 +21,7 @@
             android:text="Bulk Edit"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:fontFamily="@font/poppins_semibold" />
+            android:fontFamily="@font/poppins_extrabold" />
 
         <ImageView
             android:id="@+id/ivClose"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Encountered Count"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetViewed"
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Viewed Count"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <!-- Tags Section -->
             <TextView
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:text="Remove All Tags"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:text="Add Tag:"
                     android:paddingStart="8dp"
-                    android:fontFamily="@font/poppins" />
+                    android:fontFamily="@font/poppins_light" />
 
                 <EditText
                     android:id="@+id/etAddTag"
@@ -120,7 +120,7 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:background="@android:drawable/edit_text"
-                    android:fontFamily="@font/poppins" />
+                    android:fontFamily="@font/poppins_light" />
             </LinearLayout>
 
             <!-- Timestamps Section -->
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Created At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetModifiedAt"
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Modified At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetFirstViewedAt"
@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset First Viewed At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetFirstEncounteredAt"
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset First Encountered At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetLastViewedAt"
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Last Viewed At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetLastEncounteredAt"
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Last Encountered At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
             <CheckBox
                 android:id="@+id/cbResetLastParaCreatedAt"
@@ -189,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reset Last Article Created At"
                 android:paddingStart="8dp"
-                android:fontFamily="@font/poppins" />
+                android:fontFamily="@font/poppins_light" />
 
         </LinearLayout>
     </ScrollView>
@@ -202,6 +202,6 @@
         android:text="Apply Changes (0)"
         android:enabled="false"
         android:layout_marginTop="12dp"
-        android:fontFamily="@font/poppins_semibold" />
+        android:fontFamily="@font/poppins_extrabold" />
 
 </LinearLayout>
