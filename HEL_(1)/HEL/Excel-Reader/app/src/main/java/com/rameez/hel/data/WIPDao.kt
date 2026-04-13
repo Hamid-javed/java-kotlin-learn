@@ -182,4 +182,42 @@ WHERE LOWER(category) IN (:categories)
     @Query("SELECT * FROM GENERATED_ARTICLES")
     suspend fun getAllArticles(): List<ArticleModel>
 
+    // === BULK ACTIONS ===
+
+    @Query("SELECT * FROM WIP_LIST WHERE id IN (:ids)")
+    suspend fun getWIPsByIds(ids: List<Int>): List<WIPModel>
+
+    @Query("UPDATE WIP_LIST SET readCount = 0, readCountUpdatedAt = 0, firstEncounteredAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetEncounteredCount(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET displayCount = 0, displayCountUpdatedAt = 0, firstViewedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetViewedCount(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET customTag = '' WHERE id IN (:ids)")
+    suspend fun bulkRemoveAllTags(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET createdAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetCreatedAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET modifiedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetModifiedAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET firstViewedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetFirstViewedAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET firstEncounteredAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetFirstEncounteredAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET displayCountUpdatedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetLastViewedAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET readCountUpdatedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetLastEncounteredAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET lastParaCreatedAt = 0 WHERE id IN (:ids)")
+    suspend fun bulkResetLastParaCreatedAt(ids: List<Int>)
+
+    @Query("UPDATE WIP_LIST SET customTag = :tags WHERE id = :id")
+    suspend fun updateTagsById(id: Int, tags: String)
+
 }
