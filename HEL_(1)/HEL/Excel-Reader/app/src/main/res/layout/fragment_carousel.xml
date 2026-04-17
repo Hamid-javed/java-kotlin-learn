@@ -126,7 +126,7 @@
         android:layout_height="wrap_content"
         android:background="#20000000"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/btnGeneratePara"
+        app:layout_constraintBottom_toTopOf="@+id/btnBulkEdit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -240,6 +240,18 @@
     </LinearLayout>
 
     </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/btnBulkEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bulk Edit"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/poppins_extrabold"
+        app:layout_constraintBottom_toTopOf="@+id/btnGeneratePara"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnGeneratePara"
