@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/carousel_item_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginHorizontal="10dp"
     android:layout_marginVertical="8dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/wipCv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:cardBackgroundColor="@color/silver"
         app:cardCornerRadius="16dp"
         app:cardElevation="3dp"
@@ -19,6 +19,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/innerLayout"
@@ -196,5 +201,6 @@
                     app:layout_constraintTop_toBottomOf="@id/tv3" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -188,80 +188,113 @@ WHERE LOWER(category) IN (:categories)
     @Query("SELECT * FROM WIP_LIST WHERE id IN (:ids)")
     abstract suspend fun getWIPsByIds(ids: List<Int>): List<WIPModel>
 
-    @Query("UPDATE WIP_LIST SET readCount = 0, readCountUpdatedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetEncounteredCount(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET readCount = :value, readCountUpdatedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetEncountered(ids: List<Int>, value: Float, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET displayCount = 0, displayCountUpdatedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetViewedCount(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET displayCount = :value, displayCountUpdatedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetViewed(ids: List<Int>, value: Float, ts: Long)
 
     @Query("UPDATE WIP_LIST SET customTag = '' WHERE id IN (:ids)")
     abstract suspend fun bulkRemoveAllTags(ids: List<Int>)
 
-    @Query("UPDATE WIP_LIST SET createdAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetCreatedAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET createdAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetCreatedAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET modifiedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetModifiedAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET modifiedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetModifiedAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET firstViewedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetFirstViewedAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET firstViewedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetFirstViewedAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET firstEncounteredAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetFirstEncounteredAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET firstEncounteredAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetFirstEncounteredAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET displayCountUpdatedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetLastViewedAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET displayCountUpdatedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetLastViewedAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET readCountUpdatedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetLastEncounteredAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET readCountUpdatedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetLastEncounteredAt(ids: List<Int>, ts: Long)
 
-    @Query("UPDATE WIP_LIST SET lastParaCreatedAt = 0 WHERE id IN (:ids)")
-    abstract suspend fun bulkResetLastParaCreatedAt(ids: List<Int>)
+    @Query("UPDATE WIP_LIST SET lastParaCreatedAt = :ts WHERE id IN (:ids)")
+    abstract suspend fun bulkSetLastParaCreatedAt(ids: List<Int>, ts: Long)
 
     @Query("UPDATE WIP_LIST SET customTag = :tags WHERE id = :id")
     abstract suspend fun updateTagsById(id: Int, tags: List<String>)
 
+    /**
+     * Apply a batch of bulk edits inside a single transaction.
+     *
+     * A null for any of the Float?/Long? value arguments means "do not touch this field".
+     * A non-null value (including 0/0L) means "set the field to this value for all selected WPIs".
+     * Tag add / remove are case-insensitive.
+     */
     @Transaction
     open suspend fun executeBulkActions(
         ids: List<Int>,
-        resetEncountered: Boolean,
-        resetViewed: Boolean,
+        setEncountered: Float?,
+        setViewed: Float?,
         removeAllTags: Boolean,
         addTag: String?,
-        resetCreatedAt: Boolean,
-        resetModifiedAt: Boolean,
-        resetFirstViewedAt: Boolean,
-        resetFirstEncounteredAt: Boolean,
-        resetLastViewedAt: Boolean,
-        resetLastEncounteredAt: Boolean,
-        resetLastParaCreatedAt: Boolean
+        removeTag: String?,
+        setCreatedAt: Long?,
+        setModifiedAt: Long?,
+        setFirstViewedAt: Long?,
+        setFirstEncounteredAt: Long?,
+        setLastViewedAt: Long?,
+        setLastEncounteredAt: Long?,
+        setLastParaCreatedAt: Long?
     ) {
         if (ids.isEmpty()) return
 
-        if (resetEncountered) bulkResetEncounteredCount(ids)
-        if (resetViewed) bulkResetViewedCount(ids)
+        val now = System.currentTimeMillis()
+
+        if (setEncountered != null) {
+            // When the count is a positive number, stamp the "last encountered" timestamp to now
+            // so the timestamp filters agree with the data. Setting to 0 also resets the timestamp.
+            val ts = if (setEncountered > 0f) now else 0L
+            bulkSetEncountered(ids, setEncountered, ts)
+        }
+        if (setViewed != null) {
+            val ts = if (setViewed > 0f) now else 0L
+            bulkSetViewed(ids, setViewed, ts)
+        }
 
         if (removeAllTags) bulkRemoveAllTags(ids)
 
-        if (!addTag.isNullOrBlank()) {
+        val trimmedAdd = addTag?.trim().orEmpty()
+        val trimmedRemove = removeTag?.trim().orEmpty()
+        if (trimmedAdd.isNotEmpty() || trimmedRemove.isNotEmpty()) {
             val wips = getWIPsByIds(ids)
-            val trimmedTag = addTag.trim()
             for (wip in wips) {
+                val id = wip.id ?: continue
                 val currentTags = wip.customTag.toMutableList()
-                if (!currentTags.contains(trimmedTag)) {
-                    currentTags.add(trimmedTag)
-                    wip.id?.let { updateTagsById(it, currentTags) }
+                var changed = false
+
+                if (trimmedRemove.isNotEmpty()) {
+                    val sizeBefore = currentTags.size
+                    currentTags.removeAll { it.equals(trimmedRemove, ignoreCase = true) }
+                    if (currentTags.size != sizeBefore) changed = true
                 }
+
+                if (trimmedAdd.isNotEmpty()) {
+                    val alreadyHas = currentTags.any { it.equals(trimmedAdd, ignoreCase = true) }
+                    if (!alreadyHas) {
+                        currentTags.add(trimmedAdd)
+                        changed = true
+                    }
+                }
+
+                if (changed) updateTagsById(id, currentTags)
             }
         }
 
-        if (resetCreatedAt) bulkResetCreatedAt(ids)
-        if (resetModifiedAt) bulkResetModifiedAt(ids)
-        if (resetFirstViewedAt) bulkResetFirstViewedAt(ids)
-        if (resetFirstEncounteredAt) bulkResetFirstEncounteredAt(ids)
-        if (resetLastViewedAt) bulkResetLastViewedAt(ids)
-        if (resetLastEncounteredAt) bulkResetLastEncounteredAt(ids)
-        if (resetLastParaCreatedAt) bulkResetLastParaCreatedAt(ids)
+        if (setCreatedAt != null) bulkSetCreatedAt(ids, setCreatedAt)
+        if (setModifiedAt != null) bulkSetModifiedAt(ids, setModifiedAt)
+        if (setFirstViewedAt != null) bulkSetFirstViewedAt(ids, setFirstViewedAt)
+        if (setFirstEncounteredAt != null) bulkSetFirstEncounteredAt(ids, setFirstEncounteredAt)
+        if (setLastViewedAt != null) bulkSetLastViewedAt(ids, setLastViewedAt)
+        if (setLastEncounteredAt != null) bulkSetLastEncounteredAt(ids, setLastEncounteredAt)
+        if (setLastParaCreatedAt != null) bulkSetLastParaCreatedAt(ids, setLastParaCreatedAt)
     }
 
 }

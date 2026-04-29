@@ -126,16 +126,17 @@
         android:layout_height="wrap_content"
         android:background="#20000000"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/btnBulkEdit"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/llActionButtons"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingVertical="8dp"
+        android:paddingVertical="2dp"
         android:paddingHorizontal="8dp">
 
         <ImageButton
@@ -145,17 +146,6 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_previous"
             android:contentDescription="First card"
-            android:scaleType="centerInside"
-            app:tint="@color/black"/>
-
-        <ImageButton
-            android:id="@+id/btnPrev"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_rew"
-            android:contentDescription="Previous card"
             android:scaleType="centerInside"
             app:tint="@color/black"/>
 
@@ -182,17 +172,6 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_send"
             android:contentDescription="Go to card"
-            android:scaleType="centerInside"
-            app:tint="@color/black"/>
-
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_ff"
-            android:contentDescription="Next card"
             android:scaleType="centerInside"
             app:tint="@color/black"/>
 
@@ -226,14 +205,13 @@
 
         <ImageButton
             android:id="@+id/btnPauseAutoScroll"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="4dp"
-            android:background="@drawable/edit_text_bg"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_media_pause"
             android:contentDescription="Pause auto-scroll"
             android:scaleType="centerInside"
-            android:padding="8dp"
             android:visibility="gone"
             app:tint="@color/black"/>
 
@@ -241,28 +219,46 @@
 
     </HorizontalScrollView>
 
-    <Button
-        android:id="@+id/btnBulkEdit"
+    <LinearLayout
+        android:id="@+id/llActionButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bulk Edit"
-        android:visibility="gone"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="@font/poppins_extrabold"
-        app:layout_constraintBottom_toTopOf="@+id/btnGeneratePara"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnGeneratePara"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Generate Para"
-        android:visibility="gone"
-        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnGeneratePara"
+            style="?attr/materialButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="Generate Para"
+            android:visibility="gone"
+            android:fontFamily="@font/poppins_extrabold" />
+
+        <Button
+            android:id="@+id/btnBulkEdit"
+            style="?attr/materialButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="Bulk Edit"
+            android:visibility="gone"
+            android:fontFamily="@font/poppins_extrabold" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvNoResults"

@@ -408,36 +408,26 @@ class WIPFilterFragment : Fragment() {
 
         Log.d("TAG", "onViewCreated")
 
-        wipViewModel.getWIPs()?.observe(viewLifecycleOwner) {
-            it.forEach { wipItem ->
+        wipViewModel.getWIPs()?.observe(viewLifecycleOwner) { wips ->
+            categoriesList.clear()
+            customTags.clear()
 
+            wips.forEach { wipItem ->
                 val lowerCaseCategory = wipItem.category?.lowercase(Locale.ROOT)
-                if (wipItem.category !in categoriesList && lowerCaseCategory !in categoriesList.map {
-                        it.lowercase(
-                            Locale.ROOT
-                        )
-                    }
-                ) {
-                    wipItem.category?.let { it1 -> categoriesList.add(it1) }
+                if (wipItem.category !in categoriesList && lowerCaseCategory !in categoriesList.map { it.lowercase(Locale.ROOT) }) {
+                    wipItem.category?.let { categoriesList.add(it) }
                 }
 
-                wipItem.customTag?.filterNot {
-                    it.isEmpty()
-                }?.forEach { customTag ->
-                    val lowerCaseCustomTag =
-                        customTag.lowercase(Locale.ROOT)
+                wipItem.customTag?.filterNot { it.isEmpty() }?.forEach { customTag ->
+                    val lowerCaseCustomTag = customTag.lowercase(Locale.ROOT)
                     if (customTag !in customTags && lowerCaseCustomTag !in customTags.map { it.lowercase() }) {
                         customTags.add(customTag)
                     }
                 }
-
             }
 
-
-
-
-            categoryAdapter.submitList(categoriesList)
-            customTagAdapter.submitList(customTags)
+            categoryAdapter.submitList(categoriesList.toList())
+            customTagAdapter.submitList(customTags.toList())
         }
 
 
