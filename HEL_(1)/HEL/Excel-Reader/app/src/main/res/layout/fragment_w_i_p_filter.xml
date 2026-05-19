@@ -1016,6 +1016,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
             android:text="Clear"
+            android:singleLine="true"
             android:textSize="12sp" />
 
         <Button
@@ -1025,6 +1026,10 @@
             android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
             android:text="Show Results"
+            android:singleLine="true"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="8sp"
+            android:autoSizeMaxTextSize="12sp"
             android:textSize="12sp" />
 
         <Button
@@ -1034,6 +1039,10 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:text="Flashcards"
+            android:singleLine="true"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="8sp"
+            android:autoSizeMaxTextSize="12sp"
             android:textSize="12sp" />
     </LinearLayout>
 
