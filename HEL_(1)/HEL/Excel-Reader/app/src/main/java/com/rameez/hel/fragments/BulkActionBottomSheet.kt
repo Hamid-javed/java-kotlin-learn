@@ -89,6 +89,7 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
         setupCheckboxes()
         setupTagAutocomplete()
         setupTimestampPickers()
+        setupAutoCheckOnTyping()
         setupApplyButton()
         observeBulkActionComplete()
 
@@ -125,8 +126,9 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
 
         allCheckboxes.forEach { cb -> cb.setOnClickListener { updateApplyButton() } }
 
-        // Inputs stay always-enabled so the user can type/pick values before deciding to tick
-        // the checkbox. The checkbox only gates whether the entered value is actually applied.
+        // Inputs auto-tick their paired checkbox when the user types a value or picks a date
+        // (see setupAutoCheckOnTyping / setupTimestampPickers). The user can still untick
+        // afterwards to opt out before applying.
     }
 
     private fun setupTagAutocomplete() {
@@ -148,22 +150,50 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setupTimestampPickers() {
-        val tsRows = listOf(
-            binding.etSetCreatedAt,
-            binding.etSetModifiedAt,
-            binding.etSetFirstViewedAt,
-            binding.etSetFirstEncounteredAt,
-            binding.etSetLastViewedAt,
-            binding.etSetLastEncounteredAt,
-            binding.etSetLastParaCreatedAt
+    // Same silent-drop UX bug as the timestamp pickers: if the user typed a count or tag
+    // without ticking the row's checkbox, the value was dropped on Apply. Tick the paired
+    // checkbox automatically as soon as the field has non-empty text.
+    private fun setupAutoCheckOnTyping() {
+        val rows = listOf(
+            binding.cbSetEncountered to binding.etSetEncountered,
+            binding.cbSetViewed to binding.etSetViewed,
+            binding.cbAddTag to binding.etAddTag,
+            binding.cbRemoveTag to binding.etRemoveTag
         )
-        tsRows.forEach { et ->
-            et.setOnClickListener { showDateTimePicker(et) }
+        rows.forEach { (cb, et) ->
+            et.addTextChangedListener(object : android.text.TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    val hasText = !s?.toString()?.trim().isNullOrEmpty()
+                    if (hasText && !cb.isChecked) {
+                        cb.isChecked = true
+                        updateApplyButton()
+                    }
+                }
+            })
         }
     }
 
-    private fun showDateTimePicker(et: EditText) {
+    private fun setupTimestampPickers() {
+        // Each timestamp row pairs an EditText with its gating CheckBox.
+        // Picking a date auto-ticks the paired checkbox so the value is actually applied —
+        // otherwise users picked a date, hit Apply, and saw nothing change.
+        val tsRows = listOf(
+            binding.cbSetCreatedAt to binding.etSetCreatedAt,
+            binding.cbSetModifiedAt to binding.etSetModifiedAt,
+            binding.cbSetFirstViewedAt to binding.etSetFirstViewedAt,
+            binding.cbSetFirstEncounteredAt to binding.etSetFirstEncounteredAt,
+            binding.cbSetLastViewedAt to binding.etSetLastViewedAt,
+            binding.cbSetLastEncounteredAt to binding.etSetLastEncounteredAt,
+            binding.cbSetLastParaCreatedAt to binding.etSetLastParaCreatedAt
+        )
+        tsRows.forEach { (cb, et) ->
+            et.setOnClickListener { showDateTimePicker(cb, et) }
+        }
+    }
+
+    private fun showDateTimePicker(cb: CheckBox, et: EditText) {
         val cal = Calendar.getInstance()
         val existing = pickedTimestamps[et.id]
         if (existing != null) cal.timeInMillis = existing
@@ -175,6 +205,7 @@ class BulkActionBottomSheet : BottomSheetDialogFragment() {
                 val ts = cal.timeInMillis
                 pickedTimestamps[et.id] = ts
                 et.setText(dateFormat.format(Date(ts)))
+                if (!cb.isChecked) cb.isChecked = true
                 updateApplyButton()
             }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()

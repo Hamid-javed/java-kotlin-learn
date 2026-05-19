@@ -130,7 +130,7 @@ class ArticleBottomSheetFragment : BottomSheetDialogFragment() {
         updateSelectAllState()
 
         val dateFormatter = java.text.DateFormat.getDateTimeInstance()
-        tvTimestamp.text = "Created at: " + (if (createdAt > 0L) dateFormatter.format(Date(createdAt)) else "-")
+        tvTimestamp.text = "Created at: " + (if (createdAt != 0L) dateFormatter.format(Date(createdAt)) else "-")
 
         initTTS(ivSpeaker)
 

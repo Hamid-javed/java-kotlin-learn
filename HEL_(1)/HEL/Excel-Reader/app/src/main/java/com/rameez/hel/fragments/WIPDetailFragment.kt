@@ -119,16 +119,16 @@ class WIPDetailFragment : Fragment() {
 
 
                     val dateFormatter = java.text.DateFormat.getDateTimeInstance()
-                    tvCreatedAt.text = "Created at: " + (if (wip.createdAt > 0L) dateFormatter.format(java.util.Date(wip.createdAt)) else "-")
-                    tvModifiedAt.text = "Modified at: " + (if (wip.modifiedAt > 0L) dateFormatter.format(java.util.Date(wip.modifiedAt)) else "-")
-                    tvLastViewedAt.text = "Last viewed: " + (if (wip.displayCountUpdatedAt > 0L) dateFormatter.format(java.util.Date(wip.displayCountUpdatedAt)) else "-")
-                    tvLastEncounteredAt.text = "Last encountered: " + (if (wip.readCountUpdatedAt > 0L) dateFormatter.format(java.util.Date(wip.readCountUpdatedAt)) else "-")
+                    tvCreatedAt.text = "Created at: " + (if (wip.createdAt != 0L) dateFormatter.format(java.util.Date(wip.createdAt)) else "-")
+                    tvModifiedAt.text = "Modified at: " + (if (wip.modifiedAt != 0L) dateFormatter.format(java.util.Date(wip.modifiedAt)) else "-")
+                    tvLastViewedAt.text = "Last viewed: " + (if (wip.displayCountUpdatedAt != 0L) dateFormatter.format(java.util.Date(wip.displayCountUpdatedAt)) else "-")
+                    tvLastEncounteredAt.text = "Last encountered: " + (if (wip.readCountUpdatedAt != 0L) dateFormatter.format(java.util.Date(wip.readCountUpdatedAt)) else "-")
                 tvFirstViewedAt.text = "First viewed: " +
-                        if (wip.firstViewedAt > 0L) dateFormatter.format(Date(wip.firstViewedAt)) else "-"
+                        if (wip.firstViewedAt != 0L) dateFormatter.format(Date(wip.firstViewedAt)) else "-"
                     tvFirstEncounteredAt.text = "First encountered: " +
-                            if (wip.firstEncounteredAt > 0L) dateFormatter.format(Date(wip.firstEncounteredAt)) else "-"
-                
-                tvParaCreatedAt.text = if (wip.lastParaCreatedAt > 0L) dateFormatter.format(Date(wip.lastParaCreatedAt)) else "-"
+                            if (wip.firstEncounteredAt != 0L) dateFormatter.format(Date(wip.firstEncounteredAt)) else "-"
+
+                tvParaCreatedAt.text = if (wip.lastParaCreatedAt != 0L) dateFormatter.format(Date(wip.lastParaCreatedAt)) else "-"
                 }
             }
 
