@@ -42,7 +42,8 @@
       "PowerShell(Copy-Item *)",
       "Bash(./gradlew :app:compileDebugKotlin)",
       "Bash(./gradlew :app:compileOriginalDebugKotlin)",
-      "Bash(./gradlew :app:assembleOriginalDebug)"
+      "Bash(./gradlew :app:assembleOriginalDebug)",
+      "Bash(.\\\\gradlew.bat assembleDebug)"
     ],
     "defaultMode": "bypassPermissions"
   }
