@@ -254,6 +254,37 @@ class WIPViewModel : ViewModel() {
         _generatedArticle.value = null
     }
 
+    private val _bulkActionComplete = MutableLiveData<Boolean>()
+    val bulkActionComplete: LiveData<Boolean> get() = _bulkActionComplete
 
+    fun executeBulkActions(
+        ids: List<Int>,
+        setEncountered: Float?,
+        setViewed: Float?,
+        removeAllTags: Boolean,
+        addTag: String?,
+        removeTag: String?,
+        setCreatedAt: Long?,
+        setModifiedAt: Long?,
+        setFirstViewedAt: Long?,
+        setFirstEncounteredAt: Long?,
+        setLastViewedAt: Long?,
+        setLastEncounteredAt: Long?,
+        setLastParaCreatedAt: Long?
+    ) {
+        viewModelScope.launch {
+            wipRepository?.executeBulkActions(
+                ids, setEncountered, setViewed, removeAllTags, addTag, removeTag,
+                setCreatedAt, setModifiedAt, setFirstViewedAt,
+                setFirstEncounteredAt, setLastViewedAt, setLastEncounteredAt,
+                setLastParaCreatedAt
+            )
+            _bulkActionComplete.postValue(true)
+        }
+    }
+
+    fun resetBulkActionComplete() {
+        _bulkActionComplete.value = false
+    }
 
 }

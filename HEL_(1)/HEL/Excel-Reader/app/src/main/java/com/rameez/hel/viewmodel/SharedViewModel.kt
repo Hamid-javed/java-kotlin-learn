@@ -79,6 +79,10 @@ class SharedViewModel : ViewModel() {
     var selectedTags = mutableSetOf<String>()
     var selectedCategories = mutableSetOf<String>()
 
+    // Ids that already had their view-count / timestamp bumped in the current flashcard session.
+    // Persisted here so view-recreation (returning from detail, config change) does not double-count.
+    val flashcardSessionCountedIds = mutableSetOf<Int>()
+
     // Article (Para) Filter ---
     var articleCreatedAt: Long? = null
     var articleCreatedAtTo: Long? = null

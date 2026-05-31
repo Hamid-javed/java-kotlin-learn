@@ -754,36 +754,36 @@ class WIPListFragment : Fragment() {
             model.readCount?.toDouble()?.let { row.createCell(6).setCellValue(it) }
             model.displayCount?.toDouble()?.let { row.createCell(7).setCellValue(it) }
             row.createCell(8).setCellValue(
-                if (model.createdAt > 0L)
+                if (model.createdAt != 0L)
                     dateFormat.format(Date(model.createdAt))
                 else
                     "-"
             )
 
             row.createCell(9).setCellValue(
-                if (model.modifiedAt > 0L)
+                if (model.modifiedAt != 0L)
                     dateFormat.format(Date(model.modifiedAt))
                 else
                     "-"
             )
 
             row.createCell(10).setCellValue(
-                if (model.displayCountUpdatedAt > 0L)
+                if (model.displayCountUpdatedAt != 0L)
                     dateFormat.format(Date(model.displayCountUpdatedAt))
                 else
                     "-"
             )
 
             row.createCell(11).setCellValue(
-                if (model.readCountUpdatedAt > 0L)
+                if (model.readCountUpdatedAt != 0L)
                     dateFormat.format(Date(model.readCountUpdatedAt))
                 else
                     "-"
             )
 
-            row.createCell(12).setCellValue(if (model.firstViewedAt > 0L) dateFormat.format(Date(model.firstViewedAt)) else "-")
-            row.createCell(13).setCellValue(if (model.firstEncounteredAt > 0L) dateFormat.format(Date(model.firstEncounteredAt)) else "-")
-            row.createCell(14).setCellValue(if (model.lastParaCreatedAt > 0L) dateFormat.format(Date(model.lastParaCreatedAt)) else "-")
+            row.createCell(12).setCellValue(if (model.firstViewedAt != 0L) dateFormat.format(Date(model.firstViewedAt)) else "-")
+            row.createCell(13).setCellValue(if (model.firstEncounteredAt != 0L) dateFormat.format(Date(model.firstEncounteredAt)) else "-")
+            row.createCell(14).setCellValue(if (model.lastParaCreatedAt != 0L) dateFormat.format(Date(model.lastParaCreatedAt)) else "-")
 
         }
 

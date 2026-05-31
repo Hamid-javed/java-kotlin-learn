@@ -42,7 +42,8 @@ class CarouselFragment : Fragment() {
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val wipViewModel: WIPViewModel by activityViewModels()
     private var currentPosition: Int = 0
-    private val sessionCountedIds = HashSet<Int>()
+    // Use shared set so session state survives view recreation (returning from detail, config change)
+    private val sessionCountedIds get() = sharedViewModel.flashcardSessionCountedIds
     private var previousPosition = 0
     private var isAdded = false
     private val handler = Handler(Looper.getMainLooper())
@@ -52,6 +53,9 @@ class CarouselFragment : Fragment() {
     private lateinit var textToSpeech: TextToSpeech
     private var countDownTimer: CountDownTimer? = null
     private var isTtsReady = false
+    // True once the user has started an intentional scroll in this view session.
+    // Prevents programmatic scrolls (e.g., scrollToPosition on re-entry) from counting as a flip.
+    private var userInitiatedScroll = false
 
     private val runnable = object : Runnable {
         override fun run() {
@@ -77,6 +81,10 @@ class CarouselFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Fresh flashcard session — clear tracking state that may have been left over from a
+        // previous session (e.g., after a process kill). Fragment re-attachment (returning
+        // from detail) does not re-run onCreate, so legitimate in-session state is preserved.
+        sharedViewModel.flashcardSessionCountedIds.clear()
         textToSpeech = TextToSpeech(requireContext()) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 textToSpeech.language = Locale.US
@@ -145,6 +153,7 @@ class CarouselFragment : Fragment() {
                     sharedViewModel.leftSwipedItemList.clear()
                     sharedViewModel.itemPos = null
                     sharedViewModel.itemId = null
+                    sharedViewModel.flashcardSessionCountedIds.clear()
                     findNavController().navigateUp()
                 }
             }
@@ -180,6 +189,7 @@ class CarouselFragment : Fragment() {
                 sharedViewModel.leftSwipedItemList.clear()
                 sharedViewModel.itemPos = null
                 sharedViewModel.itemId = null
+                sharedViewModel.flashcardSessionCountedIds.clear()
                 findNavController().navigateUp()
             }
 
@@ -195,6 +205,25 @@ class CarouselFragment : Fragment() {
 
             cbSelectAll.setOnClickListener {
                 carouselAdapter.selectAll(cbSelectAll.isChecked)
+            }
+
+            btnBulkEdit.setOnClickListener {
+                val selectedIds = carouselAdapter.selectedIds.toList()
+                if (selectedIds.isEmpty()) {
+                    Toast.makeText(requireContext(), "No WPIs selected", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val bulkSheet = BulkActionBottomSheet.newInstance(selectedIds)
+                bulkSheet.onBulkActionApplied = { editedIds ->
+                    showBulkEditedMessage(editedIds)
+                }
+                // Refresh the carousel from DB on every dismiss (apply, cancel, swipe, tap-out).
+                // This fixes the case where closing bulk edit without changes left the carousel
+                // in a partial / stale state.
+                bulkSheet.onBulkActionDismissed = {
+                    refreshCarouselFromDb()
+                }
+                bulkSheet.show(childFragmentManager, "BulkActionBS")
             }
 
             btnGeneratePara.setOnClickListener {
@@ -228,6 +257,12 @@ class CarouselFragment : Fragment() {
                     currentPosition = 0
                     previousPosition = 0
                     updateCardPosition(0)
+                    val selCount = carouselAdapter.selectedIds.size
+                    val totCount = carouselAdapter.itemCount
+                    mBinding.tvSelectionCount.text = "$selCount/$totCount selected"
+                    mBinding.cbSelectAll.isChecked = selCount == totCount && totCount > 0
+                    mBinding.btnGeneratePara.visibility = if (selCount >= 2) View.VISIBLE else View.GONE
+                    mBinding.btnBulkEdit.visibility = if (selCount >= 1) View.VISIBLE else View.GONE
                 }
                 Toast.makeText(requireContext(), "Cards shuffled", Toast.LENGTH_SHORT).show()
             }
@@ -235,12 +270,6 @@ class CarouselFragment : Fragment() {
             // #9: Navigation buttons
             btnFirst.setOnClickListener { navigateToCard(0) }
             btnLast.setOnClickListener { navigateToCard(shuffledList.size - 1) }
-            btnPrev.setOnClickListener {
-                if (currentPosition > 0) navigateToCard(currentPosition - 1)
-            }
-            btnNext.setOnClickListener {
-                if (currentPosition < shuffledList.size - 1) navigateToCard(currentPosition + 1)
-            }
 
             // #8: Direct navigation to card number
             btnGoToCard.setOnClickListener { goToTypedCard() }
@@ -269,6 +298,7 @@ class CarouselFragment : Fragment() {
             mBinding.tvSelectionCount.text = "$selectedCount/$totalCount selected"
             mBinding.cbSelectAll.isChecked = selectedCount == totalCount && totalCount > 0
             mBinding.btnGeneratePara.visibility = if (selectedCount >= 2) View.VISIBLE else View.GONE
+            mBinding.btnBulkEdit.visibility = if (selectedCount >= 1) View.VISIBLE else View.GONE
         }
 
         val idsList = arrayListOf<Int>()
@@ -326,7 +356,12 @@ class CarouselFragment : Fragment() {
                     }
                 }
 
-                mBinding.tvSelectionCount.text = "0/${carouselAdapter.itemCount} selected"
+                val selCount = carouselAdapter.selectedIds.size
+                val totCount = carouselAdapter.itemCount
+                mBinding.tvSelectionCount.text = "$selCount/$totCount selected"
+                mBinding.cbSelectAll.isChecked = selCount == totCount && totCount > 0
+                mBinding.btnGeneratePara.visibility = if (selCount >= 2) View.VISIBLE else View.GONE
+                mBinding.btnBulkEdit.visibility = if (selCount >= 1) View.VISIBLE else View.GONE
             }
 
             if (shuffledList.isEmpty()) {
@@ -422,8 +457,13 @@ class CarouselFragment : Fragment() {
                             speakWIP(shuffledList[snappedPos])
                         }
 
-                        // #13: Handle view-count and last-viewed-timestamp flags independently
-                        if (id != null && !sessionCountedIds.contains(id)) {
+                        // #13: Handle view-count and last-viewed-timestamp flags independently.
+                        // Only count when the settle followed a user drag or auto-scroll — not
+                        // when RecyclerView settles due to programmatic scrollToPosition on
+                        // view recreation (which would otherwise re-count the current card).
+                        val shouldCount = userInitiatedScroll ||
+                                (sharedViewModel.isAutoScrollEnabled && !sharedViewModel.isAutoScrollPaused && snappedPos != previousPosition)
+                        if (shouldCount && id != null && !sessionCountedIds.contains(id)) {
                             val isParaFilterActive = sharedViewModel.articleCreatedOperator != null
                             if (!isParaFilterActive) {
                                 applyFlashcardTracking(id)
@@ -431,6 +471,7 @@ class CarouselFragment : Fragment() {
                             }
                         }
 
+                        userInitiatedScroll = false
                         previousPosition = snappedPos
                     }
 
@@ -439,6 +480,8 @@ class CarouselFragment : Fragment() {
                         handler.postDelayed(runnable, sharedViewModel.autoScrollIntervalSecs * 1000L)
                     }
                 } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    // Real finger-drag from the user — mark so the next IDLE can count.
+                    userInitiatedScroll = true
                     handler.removeCallbacks(runnable)
                 }
             }
@@ -447,6 +490,11 @@ class CarouselFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dx != 0) {
                     val lm = recyclerView.layoutManager as LinearLayoutManager
+                    val snapView = snapHelper.findSnapView(lm)
+                    val snapPos = snapView?.let { lm.getPosition(it) } ?: RecyclerView.NO_POSITION
+                    if (snapPos != RecyclerView.NO_POSITION) {
+                        updateCardPosition(snapPos)
+                    }
                     val lastPos = lm.findLastVisibleItemPosition()
                     if (lastPos != RecyclerView.NO_POSITION && lastPos < carouselAdapter.itemCount) {
                         val item = carouselAdapter.getWIPItem(lastPos)
@@ -474,14 +522,73 @@ class CarouselFragment : Fragment() {
         }
     }
 
-    // Apply view-count and last-viewed-timestamp flags independently
+    // Apply view-count and last-viewed-timestamp flags independently.
+    // Also mirror the change into the local list so the card's displayed count updates
+    // immediately instead of staying stale until the fragment view is recreated.
     private fun applyFlashcardTracking(id: Int) {
         val updateCount = sharedViewModel.updateViewCountDuringFlashcard
         val updateTs = sharedViewModel.updateTimestampsDuringFlashcard
 
         when {
-            updateCount -> wipViewModel.incrementDisplayCount(id, updateTs)
-            updateTs -> wipViewModel.updateLastViewedTimestamp(id)
+            updateCount -> {
+                wipViewModel.incrementDisplayCount(id, updateTs)
+                mirrorLocalUpdate(id) { item ->
+                    item.copy(
+                        displayCount = (item.displayCount ?: 0f) + 1f,
+                        displayCountUpdatedAt = if (updateTs) System.currentTimeMillis() else item.displayCountUpdatedAt,
+                        firstViewedAt = if (updateTs && item.firstViewedAt == 0L) System.currentTimeMillis() else item.firstViewedAt
+                    )
+                }
+            }
+            updateTs -> {
+                wipViewModel.updateLastViewedTimestamp(id)
+                mirrorLocalUpdate(id) { item ->
+                    item.copy(
+                        displayCountUpdatedAt = System.currentTimeMillis(),
+                        firstViewedAt = if (item.firstViewedAt == 0L) System.currentTimeMillis() else item.firstViewedAt
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showBulkEditedMessage(editedIds: List<Int>) {
+        if (editedIds.isEmpty()) return
+        val editedSet = editedIds.toSet()
+        val message = if (shuffledList.isNotEmpty() && editedSet.size == shuffledList.size &&
+            shuffledList.mapNotNull { it.id }.toSet() == editedSet) {
+            "Bulk edit applied to all ${editedSet.size} filtered WPIs"
+        } else {
+            val seqNos = shuffledList
+                .filter { it.id in editedSet }
+                .mapNotNull { it.sr?.let { sr -> if (sr % 1f == 0f) sr.toInt().toString() else sr.toString() } }
+            val seqLabel = if (seqNos.isEmpty()) "${editedSet.size} WPIs" else "Seq #: ${seqNos.joinToString(", ")}"
+            "Bulk edit applied — $seqLabel"
+        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun refreshCarouselFromDb() {
+        val binding = _binding ?: return
+        lifecycleScope.launch {
+            val allWips = wipViewModel.getWIPs2() ?: emptyList()
+            val filteredIds = shuffledList.mapNotNull { it.id }
+            val byId = allWips.associateBy { it.id }
+            val updatedList = filteredIds.mapNotNull { byId[it] }
+            shuffledList = updatedList
+            carouselAdapter.submitList(updatedList.toList())
+            binding.tvResultCount.text = "total: ${updatedList.size}"
+        }
+    }
+
+    private fun mirrorLocalUpdate(id: Int, transform: (WIPModel) -> WIPModel) {
+        val idx = shuffledList.indexOfFirst { it.id == id }
+        if (idx < 0) return
+        val mutable = shuffledList.toMutableList()
+        mutable[idx] = transform(mutable[idx])
+        shuffledList = mutable
+        carouselAdapter.submitList(shuffledList) {
+            carouselAdapter.notifyItemChanged(idx)
         }
     }
 
@@ -619,6 +726,7 @@ class CarouselFragment : Fragment() {
                 val binding = _binding ?: return
                 sharedViewModel.remainingTimeInMillis = null
                 sharedViewModel.isTimerRunning = false
+                sharedViewModel.flashcardSessionCountedIds.clear()
                 binding.tvTimer.text = "00:00:00"
                 findNavController().navigateUp()
             }
@@ -691,5 +799,11 @@ class CarouselFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         restoreResultCount()
+        val selectedCount = carouselAdapter.selectedIds.size
+        val totalCount = carouselAdapter.itemCount
+        mBinding.tvSelectionCount.text = "$selectedCount/$totalCount selected"
+        mBinding.cbSelectAll.isChecked = selectedCount == totalCount && totalCount > 0
+        mBinding.btnGeneratePara.visibility = if (selectedCount >= 2) View.VISIBLE else View.GONE
+        mBinding.btnBulkEdit.visibility = if (selectedCount >= 1) View.VISIBLE else View.GONE
     }
 }

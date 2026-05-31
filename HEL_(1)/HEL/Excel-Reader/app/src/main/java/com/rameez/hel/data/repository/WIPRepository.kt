@@ -250,6 +250,27 @@ class WIPRepository(private val wipDao: WIPDao) {
         wipDao.resetParaCreatedAt(id)
     }
 
-
+    suspend fun executeBulkActions(
+        ids: List<Int>,
+        setEncountered: Float?,
+        setViewed: Float?,
+        removeAllTags: Boolean,
+        addTag: String?,
+        removeTag: String?,
+        setCreatedAt: Long?,
+        setModifiedAt: Long?,
+        setFirstViewedAt: Long?,
+        setFirstEncounteredAt: Long?,
+        setLastViewedAt: Long?,
+        setLastEncounteredAt: Long?,
+        setLastParaCreatedAt: Long?
+    ) {
+        wipDao.executeBulkActions(
+            ids, setEncountered, setViewed, removeAllTags, addTag, removeTag,
+            setCreatedAt, setModifiedAt, setFirstViewedAt,
+            setFirstEncounteredAt, setLastViewedAt, setLastEncounteredAt,
+            setLastParaCreatedAt
+        )
+    }
 
 }

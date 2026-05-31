@@ -1016,6 +1016,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
             android:text="Clear"
+            android:singleLine="true"
             android:textSize="12sp" />
 
         <Button
@@ -1024,8 +1025,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
-            android:text="Show Results"
-            android:textSize="12sp" />
+            android:text="SHOW\nRESULT"
+            android:gravity="center"
+            android:textSize="11sp" />
 
         <Button
             android:id="@+id/btnApplyFilter"
@@ -1034,7 +1036,10 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:text="Flashcards"
-            android:textSize="12sp" />
+            android:maxLines="1"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="6sp"
+            android:autoSizeMaxTextSize="12sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
