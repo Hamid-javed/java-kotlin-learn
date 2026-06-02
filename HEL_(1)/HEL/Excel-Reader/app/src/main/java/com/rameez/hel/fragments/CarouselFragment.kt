@@ -645,8 +645,8 @@ class CarouselFragment : Fragment() {
         }
 
         val options = sharedViewModel.ttsOptions
-        var first = true
         var hasSomethingToSay = false
+        var warmupQueued = false
 
         options.forEach { option ->
             val textToRead = when (option) {
@@ -658,9 +658,14 @@ class CarouselFragment : Fragment() {
 
             if (!textToRead.isNullOrBlank()) {
                 hasSomethingToSay = true
-                val queueMode = if (first) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
-                textToSpeech.speak(textToRead, queueMode, null, option)
-                first = false
+                if (!warmupQueued) {
+                    // Prime the audio path with a short silence before any speech.
+                    // Wired earphones need ~200-300ms to wake up from silence; without
+                    // this the first word of every phrase/utterance gets cut off.
+                    textToSpeech.playSilentUtterance(300, TextToSpeech.QUEUE_FLUSH, "audio_warmup")
+                    warmupQueued = true
+                }
+                textToSpeech.speak(textToRead, TextToSpeech.QUEUE_ADD, null, option)
             }
         }
 
