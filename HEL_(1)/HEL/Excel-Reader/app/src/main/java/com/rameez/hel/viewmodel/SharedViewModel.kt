@@ -88,4 +88,7 @@ class SharedViewModel : ViewModel() {
     var articleCreatedAtTo: Long? = null
     var articleCreatedOperator: String? = null
 
+    // Keeps wired-earphone audio path warm so TTS first-word is never cut off
+    var isWhiteNoiseEnabled: Boolean = false
+
 }

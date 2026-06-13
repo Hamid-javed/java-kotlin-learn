@@ -1,6 +1,9 @@
 package com.rameez.hel.fragments
 
 import android.annotation.SuppressLint
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -53,6 +56,9 @@ class CarouselFragment : Fragment() {
     private lateinit var textToSpeech: TextToSpeech
     private var countDownTimer: CountDownTimer? = null
     private var isTtsReady = false
+    private var whiteNoiseTrack: AudioTrack? = null
+    private var whiteNoiseThread: Thread? = null
+    @Volatile private var whiteNoiseRunning = false
     // True once the user has started an intentional scroll in this view session.
     // Prevents programmatic scrolls (e.g., scrollToPosition on re-entry) from counting as a flip.
     private var userInitiatedScroll = false
@@ -351,6 +357,7 @@ class CarouselFragment : Fragment() {
 
                     mBinding.rvList.post {
                         if (sharedViewModel.isReadAloud && !sharedViewModel.isMuted) {
+                            if (sharedViewModel.isWhiteNoiseEnabled) startWhiteNoise()
                             speakWIP(shuffledList[posToScroll])
                         }
                     }
@@ -511,6 +518,7 @@ class CarouselFragment : Fragment() {
                 !sharedViewModel.isMuted &&
                 shuffledList.isNotEmpty()
             ) {
+                if (sharedViewModel.isWhiteNoiseEnabled) startWhiteNoise()
                 val lm = mBinding.rvList.layoutManager as? LinearLayoutManager
                 val pos = lm?.findFirstVisibleItemPosition().let {
                     if (it == null || it == -1) 0 else it
@@ -645,8 +653,8 @@ class CarouselFragment : Fragment() {
         }
 
         val options = sharedViewModel.ttsOptions
+        var first = true
         var hasSomethingToSay = false
-        var warmupQueued = false
 
         options.forEach { option ->
             val textToRead = when (option) {
@@ -658,20 +666,63 @@ class CarouselFragment : Fragment() {
 
             if (!textToRead.isNullOrBlank()) {
                 hasSomethingToSay = true
-                if (!warmupQueued) {
-                    // Prime the audio path with a short silence before any speech.
-                    // Wired earphones need ~200-300ms to wake up from silence; without
-                    // this the first word of every phrase/utterance gets cut off.
-                    textToSpeech.playSilentUtterance(300, TextToSpeech.QUEUE_FLUSH, "audio_warmup")
-                    warmupQueued = true
-                }
-                textToSpeech.speak(textToRead, TextToSpeech.QUEUE_ADD, null, option)
+                val queueMode = if (first) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+                textToSpeech.speak(textToRead, queueMode, null, option)
+                first = false
             }
         }
 
         if (!hasSomethingToSay) {
             textToSpeech.stop()
         }
+    }
+
+    private fun startWhiteNoise() {
+        if (whiteNoiseRunning) return
+        val sampleRate = 44100
+        val minBuf = AudioTrack.getMinBufferSize(
+            sampleRate,
+            AudioFormat.CHANNEL_OUT_MONO,
+            AudioFormat.ENCODING_PCM_16BIT
+        )
+        val track = AudioTrack.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build()
+            )
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .build()
+            )
+            .setBufferSizeInBytes(minBuf)
+            .setTransferMode(AudioTrack.MODE_STREAM)
+            .build()
+        track.setVolume(0.008f)  // nearly inaudible — just enough to keep the audio path warm
+        track.play()
+        whiteNoiseTrack = track
+        whiteNoiseRunning = true
+        whiteNoiseThread = Thread {
+            val buf = ShortArray(minBuf / 2)
+            val rng = java.util.Random()
+            while (whiteNoiseRunning) {
+                for (i in buf.indices) buf[i] = (rng.nextInt(601) - 300).toShort()
+                track.write(buf, 0, buf.size)
+            }
+        }.also { it.isDaemon = true; it.start() }
+    }
+
+    private fun stopWhiteNoise() {
+        whiteNoiseRunning = false
+        whiteNoiseThread?.interrupt()
+        whiteNoiseThread = null
+        whiteNoiseTrack?.stop()
+        whiteNoiseTrack?.release()
+        whiteNoiseTrack = null
     }
 
     private fun stripSourceForTts(text: String?): String {
@@ -791,6 +842,7 @@ class CarouselFragment : Fragment() {
         handler.removeCallbacks(runnable)
         countDownTimer?.cancel()
         countDownTimer = null
+        stopWhiteNoise()
         super.onDestroyView()
         textToSpeech.stop()
         _binding = null
