@@ -182,6 +182,7 @@ class WIPFilterFragment : Fragment() {
             etScrollInterval.isEnabled = false
             cbUpdateViewCount.isChecked = true
             cbUpdateTimestamps.isChecked = true
+            cbWhiteNoise.isChecked = false
             spinnerSortBy.setSelection(0)
             btnSortOrder.text = "DESC \u2193"
         }
@@ -283,6 +284,7 @@ class WIPFilterFragment : Fragment() {
             ttsOptions.clear()
             updateViewCountDuringFlashcard = true
             updateTimestampsDuringFlashcard = true
+            isWhiteNoiseEnabled = false
             sortBy = null
             sortAscending = false
             isFilterApplied = false
@@ -371,11 +373,15 @@ class WIPFilterFragment : Fragment() {
         // #13: Flashcard options checkboxes
         mBinding.cbUpdateViewCount.isChecked = sharedViewModel.updateViewCountDuringFlashcard
         mBinding.cbUpdateTimestamps.isChecked = sharedViewModel.updateTimestampsDuringFlashcard
+        mBinding.cbWhiteNoise.isChecked = sharedViewModel.isWhiteNoiseEnabled
         mBinding.cbUpdateViewCount.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.updateViewCountDuringFlashcard = isChecked
         }
         mBinding.cbUpdateTimestamps.setOnCheckedChangeListener { _, isChecked ->
             sharedViewModel.updateTimestampsDuringFlashcard = isChecked
+        }
+        mBinding.cbWhiteNoise.setOnCheckedChangeListener { _, isChecked ->
+            sharedViewModel.isWhiteNoiseEnabled = isChecked
         }
 
         // #14: Sort spinner setup

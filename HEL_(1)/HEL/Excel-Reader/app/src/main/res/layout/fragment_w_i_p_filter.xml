@@ -944,6 +944,14 @@
                     android:textColor="@color/black"
                     android:checked="true"
                     android:text="Update Viewed Timestamps" />
+
+                <CheckBox
+                    android:id="@+id/cbWhiteNoise"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:checked="false"
+                    android:text="Background White Noise (fixes wired earphone audio cutoff)" />
             </LinearLayout>
 
             <!-- #14: Sort filter results -->
