@@ -1335,10 +1335,13 @@ class WIPFilterFragment : Fragment() {
             }
 
 // Update sharedViewModel whenever a checkbox is clicked
-            val checkBoxes = listOf(cbWord, cbMeaning, cbSentence)
-            checkBoxes.forEach { cb ->
-                cb.setOnCheckedChangeListener { buttonView, isChecked ->
-                    val option = buttonView.text.toString()
+            val checkBoxes = listOf(
+                cbWord to "Word",
+                cbMeaning to "Meaning",
+                cbSentence to "Sentence"
+            )
+            checkBoxes.forEach { (cb, option) ->
+                cb.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         if (!sharedViewModel.ttsOptions.contains(option)) {
                             sharedViewModel.ttsOptions.add(option)
